@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./githubnotifier
+    username: sa
+    password: sa
+
+spring.jpa.hibernate.ddl-auto: none
+
+logging.file: app.log

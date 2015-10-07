@@ -1,0 +1,37 @@
+CREATE TABLE configuration (
+  username VARCHAR(512) PRIMARY KEY,
+  password VARCHAR(512) NOT NULL,
+  github_url VARCHAR(1025) NOT NULL
+);
+
+CREATE TABLE commits (
+  sha VARCHAR(1024) PRIMARY KEY,
+  ref VARCHAR(1024) NOT NULL,
+  label VARCHAR(1024) NOT NULL,
+  user_id INTEGER NOT NULL,
+  repo_full_name VARCHAR(1024) NOT NULL
+);
+
+CREATE TABLE pull_requests (
+  id INT PRIMARY KEY,
+  number INT NOT NULL,
+  title VARCHAR(1024) NOT NULL,
+  state VARCHAR(50) NOT NULL,
+  html_url VARCHAR(256) NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  base_sha VARCHAR(1024) NOT NULL,
+  head_sha VARCHAR(1024) NOT NULL
+);
+
+CREATE TABLE repositories (
+  full_name VARCHAR(1024) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE users (
+  id INTEGER NOT NULL PRIMARY KEY,
+  login VARCHAR(1024) NOT NULL,
+  name VARCHAR(1024),
+  avatar_url VARCHAR(1024) NOT NULL
+);
