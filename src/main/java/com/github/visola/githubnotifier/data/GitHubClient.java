@@ -46,9 +46,13 @@ public class GitHubClient {
     LOG.debug("Fetching PR data...");
     List<PullRequest> pullRequestsResult = new ArrayList<>();
     for (String fullName: repositoryFullNames) {
-      LOG.trace("Fetching PRs for repo {}", fullName);
-      List<PullRequest> pullRequests = Arrays.asList(restTemplate.exchange(configuration.get().getGithubUrl()+BASE_PATH+"/repos/"+fullName+"/pulls?state=all", HttpMethod.GET, createHttpEntity(), PullRequest[].class).getBody());
-      pullRequestsResult.addAll(pullRequests);
+      try {
+        LOG.trace("Fetching PRs for repo {}", fullName);
+        List<PullRequest> pullRequests = Arrays.asList(restTemplate.exchange(configuration.get().getGithubUrl()+BASE_PATH+"/repos/"+fullName+"/pulls?state=all", HttpMethod.GET, createHttpEntity(), PullRequest[].class).getBody());
+        pullRequestsResult.addAll(pullRequests);
+      } catch (Exception e) {
+        LOG.error("Error while fetching data from repository {}.", fullName, e);
+      }
     }
     return pullRequestsResult;
   }
