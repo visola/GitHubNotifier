@@ -73,6 +73,7 @@ public class RepositoryMenuManager {
         @Override
         public void actionPerformed(ActionEvent e) {
           repoRepository.deleteByName(n);
+          updateRepositoriesMenu();
         }
       });
       removeRepoMenu.add(removeRepoMenuItem);
