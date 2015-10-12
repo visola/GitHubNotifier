@@ -20,6 +20,7 @@ public class RepositoryMenuManager {
 
   private final RepositoryRepository repoRepository;
   private Menu repositoriesMenu;
+  private Menu removeRepoMenu;
   private List<MenuItem> repositoryMenus = new ArrayList<>();
 
   @Autowired
@@ -38,6 +39,10 @@ public class RepositoryMenuManager {
     });
 
     repositoriesMenu.add(addRepo);
+
+    removeRepoMenu = new Menu("Remove Repository");
+    repositoriesMenu.add(removeRepoMenu);
+
     repositoriesMenu.addSeparator();
     updateRepositoriesMenu();
   }
@@ -47,6 +52,8 @@ public class RepositoryMenuManager {
   }
 
   private void updateRepositoriesMenu() {
+    removeRepoMenu.removeAll();
+
     for (MenuItem repoMenu : repositoryMenus) {
       repositoriesMenu.remove(repoMenu);
     }
@@ -60,6 +67,16 @@ public class RepositoryMenuManager {
       MenuItem repoMenu = new MenuItem(n);
       repositoriesMenu.add(repoMenu);
       repositoryMenus.add(repoMenu);
+
+      MenuItem removeRepoMenuItem = new MenuItem(n);
+      removeRepoMenuItem.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          repoRepository.deleteByName(n);
+          updateRepositoriesMenu();
+        }
+      });
+      removeRepoMenu.add(removeRepoMenuItem);
     });
   }
 
