@@ -19,6 +19,7 @@ public class Repository {
   @Column(name="full_name")
   String fullName;
   String name;
+  String htmlUrl;
 
   public String getName() {
     return name;
@@ -34,6 +35,14 @@ public class Repository {
 
   public void setFullName(String fullName) {
     this.fullName = fullName;
+  }
+
+  public String getHtmlUrl() {
+    return htmlUrl;
+  }
+
+  public void setHtmlUrl(String htmlUrl) {
+    this.htmlUrl = htmlUrl;
   }
 
 }
