@@ -52,7 +52,11 @@ public class PullRequestMenuManager {
     pullRequestMenus.add(new MenuItem("-"));
 
     for (PullRequest pr : pullRequestService.getOpenPullRequests()) {
-      MenuItem prMenu = new MenuItem(pr.getTitle() + " - " + Humanize.naturalTime(new Date(), pr.getUpdatedAt().getTime()));
+      String text = String.format("%s - %s - %s",
+          pr.getBase().getRepository().getName(),
+          pr.getTitle(),
+          Humanize.naturalTime(new Date(), pr.getUpdatedAt().getTime()));
+      MenuItem prMenu = new MenuItem(text);
       prMenu.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
