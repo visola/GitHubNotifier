@@ -1,11 +1,13 @@
 package com.github.visola.githubnotifier.service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.visola.githubnotifier.data.GitHubClient;
 import com.github.visola.githubnotifier.data.PullRequestRepository;
@@ -33,9 +35,17 @@ public class PullRequestService {
     this.userRepository = userRepository;
   }
 
+  @Transactional
   public List<PullRequest> getPullRequests() {
-    List<PullRequest> pullRequests = gitClient.getPullRequests(StreamSupport.stream(repositoryRepository.findAll().spliterator(), false)
-        .map(Repository::getFullName).collect(Collectors.toList()));
+    Set<String> repoFullNames = StreamSupport.stream(repositoryRepository.findAll().spliterator(), false)
+        .map(Repository::getFullName)
+        .collect(Collectors.toSet());
+
+    // Mark all PRs as closed
+    repoFullNames.forEach(pullRequestRepository::closePullRequests);
+
+    // Load only PRs that are open
+    List<PullRequest> pullRequests = gitClient.getPullRequests(repoFullNames);
 
     for (PullRequest pr : pullRequests) {
       save(pr);
