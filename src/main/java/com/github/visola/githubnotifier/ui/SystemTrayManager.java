@@ -65,12 +65,12 @@ public class SystemTrayManager {
 
   private void initializeSubMenus() {
     popupMenu.removeAll();
-    Optional<Configuration> configuration = configurationService.getConfiguration();
 
+    popupMenu.add(configurationMenuManager.getMenuItem());
+
+    Optional<Configuration> configuration = configurationService.getConfiguration();
     if (configuration.isPresent()) {
       popupMenu.add(repositoryMenuManager.getMenu());
-    } else {
-      popupMenu.add(configurationMenuManager.getMenuItem());
     }
   }
 

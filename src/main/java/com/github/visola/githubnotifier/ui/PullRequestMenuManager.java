@@ -46,7 +46,11 @@ public class PullRequestMenuManager {
   }
 
   public void updatePullRequests() {
-    pullRequestMenus.forEach(mi -> mi.getParent().remove(mi));
+    pullRequestMenus.forEach(mi -> {
+      if (mi.getParent() != null) {
+        mi.getParent().remove(mi);
+      }
+    });
     pullRequestMenus.clear();
 
     pullRequestMenus.add(new MenuItem("-"));

@@ -29,4 +29,8 @@ public class ConfigurationService {
     return configuration;
   }
 
+  public void save(Configuration configuration) {
+    configurationRepository.save(configuration);
+  }
+
 }
