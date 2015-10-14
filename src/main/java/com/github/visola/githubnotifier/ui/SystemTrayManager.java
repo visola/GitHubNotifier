@@ -47,7 +47,7 @@ public class SystemTrayManager {
   private void initialize() {
     try {
       SystemTray st = SystemTray.getSystemTray();
-      
+
       trayIcon = new TrayIcon(ImageIO.read(SystemTrayManager.class.getResource("/static/img/octocat.png")));
       st.add(trayIcon);
   
