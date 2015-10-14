@@ -3,6 +3,7 @@ package com.github.visola.githubnotifier.data;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,14 +42,14 @@ public class GitHubClient {
     return restTemplate.exchange(configuration.get().getGithubUrl()+BASE_PATH+"/repos/"+repoFullName+"/pulls/"+id, HttpMethod.GET, createHttpEntity(), PullRequest.class).getBody();
   }
 
-  public List<PullRequest> getPullRequests(List<String> repositoryFullNames) {
+  public List<PullRequest> getPullRequests(Collection<String> repositoryFullNames) {
     checkConfiguration();
     LOG.debug("Fetching PR data...");
     List<PullRequest> pullRequestsResult = new ArrayList<>();
     for (String fullName: repositoryFullNames) {
       try {
         LOG.trace("Fetching PRs for repo {}", fullName);
-        List<PullRequest> pullRequests = Arrays.asList(restTemplate.exchange(configuration.get().getGithubUrl()+BASE_PATH+"/repos/"+fullName+"/pulls?state=all", HttpMethod.GET, createHttpEntity(), PullRequest[].class).getBody());
+        List<PullRequest> pullRequests = Arrays.asList(restTemplate.exchange(configuration.get().getGithubUrl()+BASE_PATH+"/repos/"+fullName+"/pulls", HttpMethod.GET, createHttpEntity(), PullRequest[].class).getBody());
         pullRequestsResult.addAll(pullRequests);
       } catch (Exception e) {
         LOG.error("Error while fetching data from repository {}.", fullName, e);

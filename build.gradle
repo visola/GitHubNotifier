@@ -32,6 +32,7 @@ dependencies {
   compile 'org.springframework.boot:spring-boot'
   compile 'org.springframework.boot:spring-boot-autoconfigure'
   compile 'org.springframework.data:spring-data-commons'
+  compile 'org.springframework.data:spring-data-jpa'
   compile 'org.springframework:spring-beans'
   compile 'org.springframework:spring-context'
   compile 'org.springframework:spring-web'
