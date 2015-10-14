@@ -11,31 +11,32 @@ import javax.swing.JOptionPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.github.visola.githubnotifier.data.ConfigurationRepository;
+import com.github.visola.githubnotifier.service.ConfigurationService;
 
 @Component
 public class ConfigurationMenuManager implements ActionListener {
 
-  private final ConfigurationRepository configurationRepository;
+  private final ConfigurationService configurationService;
 
   private MenuItem menuItem;
   private List<Runnable> configurationListeners = new ArrayList<>();
 
   @Autowired
-  public ConfigurationMenuManager(ConfigurationRepository configurationRepository) {
-    this.configurationRepository = configurationRepository;
+  public ConfigurationMenuManager(ConfigurationService configurationService) {
+    this.configurationService = configurationService;
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    ConfigurationPanel panel = new ConfigurationPanel();
+    ConfigurationPanel panel = new ConfigurationPanel(configurationService.getConfiguration());
     JOptionPane.showMessageDialog(null, panel);
-    configurationRepository.save(panel.getConfiguration());
+    configurationService.save(panel.getConfiguration());
     configurationListeners.forEach(c->c.run());
   }
 
   public MenuItem getMenuItem() {
-    menuItem = new MenuItem("Add Configuration");
+    boolean hasConfiguration = configurationService.getConfiguration().isPresent();
+    menuItem = new MenuItem((hasConfiguration ? "Edit" : "Add") + " Configuration");
     menuItem.addActionListener(this);
     return menuItem;
   }

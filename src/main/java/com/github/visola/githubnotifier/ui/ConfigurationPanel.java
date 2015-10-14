@@ -3,6 +3,7 @@ package com.github.visola.githubnotifier.ui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -22,7 +23,7 @@ public class ConfigurationPanel extends JPanel {
   private JPasswordField passwordTextField = new JPasswordField();
   private JTextField usernameTextField = new JTextField();
 
-  public ConfigurationPanel() {
+  public ConfigurationPanel(Optional<Configuration> configuration) {
     setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
     setLayout(new GridBagLayout());
@@ -73,6 +74,12 @@ public class ConfigurationPanel extends JPanel {
     gbcPasswordTextField.gridy = 2;
     passwordTextField.setColumns(COLUMN_COUNT);
     add(passwordTextField, gbcPasswordTextField);
+
+    configuration.ifPresent(config -> {
+      githubUrlTextField.setText(config.getGithubUrl());
+      usernameTextField.setText(config.getUsername());
+      passwordTextField.setText(config.getPassword());
+    });
   }
 
   public Configuration getConfiguration() {
