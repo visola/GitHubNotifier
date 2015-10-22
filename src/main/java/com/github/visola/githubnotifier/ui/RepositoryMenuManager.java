@@ -67,7 +67,7 @@ public class RepositoryMenuManager {
     }
 
     Set<String> repoNames = new HashSet<>();
-    for (Repository repo : repoRepository.findAll()) {
+    for (Repository repo : repoRepository.findAllOrderByFullName()) {
       if (repoNames.contains(repo.getName())) {
         continue;
       }
