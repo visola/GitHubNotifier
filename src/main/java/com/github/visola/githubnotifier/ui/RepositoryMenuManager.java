@@ -74,7 +74,7 @@ public class RepositoryMenuManager {
 
       repoNames.add(repo.getName());
 
-      MenuItem repoMenu = new MenuItem(repo.getName());
+      MenuItem repoMenu = new MenuItem(repo.getFullName());
       repositoriesMenu.add(repoMenu);
       repositoryMenus.add(repoMenu);
 
@@ -89,7 +89,7 @@ public class RepositoryMenuManager {
         }
       });
 
-      MenuItem removeRepoMenuItem = new MenuItem(repo.getName());
+      MenuItem removeRepoMenuItem = new MenuItem(repo.getFullName());
       removeRepoMenuItem.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
