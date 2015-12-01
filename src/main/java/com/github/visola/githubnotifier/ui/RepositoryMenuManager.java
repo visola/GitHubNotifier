@@ -18,22 +18,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.github.visola.githubnotifier.data.RepositoryRepository;
 import com.github.visola.githubnotifier.model.Repository;
+import com.github.visola.githubnotifier.service.RepositoryService;
 
 @Component
 public class RepositoryMenuManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(RepositoryMenuManager.class);
 
-  private final RepositoryRepository repoRepository;
+  private final PullRequestMenuManager prMenuManager;
+  private final RepositoryService repoService;
   private Menu repositoriesMenu;
   private Menu removeRepoMenu;
   private List<MenuItem> repositoryMenus = new ArrayList<>();
 
   @Autowired
-  public RepositoryMenuManager(AddRepositoryActionListener addRepoActionListener, RepositoryRepository repoRepository) {
-    this.repoRepository = repoRepository;
+  public RepositoryMenuManager(AddRepositoryActionListener addRepoActionListener,
+                               PullRequestMenuManager prMenuManager,
+                               RepositoryService repoService) {
+    this.prMenuManager = prMenuManager;
+    this.repoService = repoService;
 
     repositoriesMenu = new Menu("Repositories");
 
@@ -67,7 +71,7 @@ public class RepositoryMenuManager {
     }
 
     Set<String> repoNames = new HashSet<>();
-    for (Repository repo : repoRepository.findAllOrderByFullName()) {
+    for (Repository repo : repoService.findAllOrderByFullName()) {
       if (repoNames.contains(repo.getName())) {
         continue;
       }
@@ -93,7 +97,8 @@ public class RepositoryMenuManager {
       removeRepoMenuItem.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          repoRepository.deleteByName(repo.getName());
+          repoService.deleteByName(repo.getName());
+          prMenuManager.updatePullRequests();
           updateRepositoriesMenu();
         }
       });
