@@ -26,13 +26,17 @@ public class RepositoryMenuManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(RepositoryMenuManager.class);
 
+  private final PullRequestMenuManager prMenuManager;
   private final RepositoryService repoService;
   private Menu repositoriesMenu;
   private Menu removeRepoMenu;
   private List<MenuItem> repositoryMenus = new ArrayList<>();
 
   @Autowired
-  public RepositoryMenuManager(AddRepositoryActionListener addRepoActionListener, RepositoryService repoService) {
+  public RepositoryMenuManager(AddRepositoryActionListener addRepoActionListener,
+                               PullRequestMenuManager prMenuManager,
+                               RepositoryService repoService) {
+    this.prMenuManager = prMenuManager;
     this.repoService = repoService;
 
     repositoriesMenu = new Menu("Repositories");
@@ -94,6 +98,7 @@ public class RepositoryMenuManager {
         @Override
         public void actionPerformed(ActionEvent e) {
           repoService.deleteByName(repo.getName());
+          prMenuManager.updatePullRequests();
           updateRepositoriesMenu();
         }
       });
