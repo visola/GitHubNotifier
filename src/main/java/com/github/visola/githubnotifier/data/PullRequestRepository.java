@@ -24,4 +24,13 @@ public interface PullRequestRepository extends PagingAndSortingRepository<PullRe
 
   List<PullRequest> findByStateOrderByUpdatedAtDesc(String state);
 
+  @Modifying(clearAutomatically = true)
+  @Query("DELETE FROM PullRequest pr"
+      + " WHERE pr.id IN ("
+      + "   SELECT pr1.id"
+      + "   FROM PullRequest pr1"
+      + "   JOIN pr1.base.repository r"
+      + "   WHERE r.name = :name)")
+  void deleteByBaseRepositoryName(@Param("name") String name);
+
 }
