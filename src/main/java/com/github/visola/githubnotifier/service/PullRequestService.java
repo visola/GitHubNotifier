@@ -57,8 +57,12 @@ public class PullRequestService {
   public void save(PullRequest pr) {
     pr.getBase().setUser(userRepository.save(pr.getBase().getUser()));
     pr.getHead().setUser(userRepository.save(pr.getHead().getUser()));
-    repositoryRepository.save(pr.getBase().getRepository());
-    repositoryRepository.save(pr.getHead().getRepository());
+    if (pr.getBase().getRepository() != null) {
+      repositoryRepository.save(pr.getBase().getRepository());
+    }
+    if (pr.getHead().getRepository() != null) {
+      repositoryRepository.save(pr.getHead().getRepository());
+    }
     pullRequestRepository.save(pr);
   }
 
