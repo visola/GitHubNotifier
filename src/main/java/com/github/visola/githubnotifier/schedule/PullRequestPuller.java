@@ -48,7 +48,7 @@ public class PullRequestPuller {
         LOG.debug("Checking PR: {}", pr.getTitle());
         Notification notification = notificationRepository.findOne(pr.getId());
         if (notification == null || pr.getUpdatedAt().after(notification.getLastNotification())) {
-          tray.showNotification(pr.getTitle(), "Pull Request updated");
+          tray.showNotification(pr.getTitle(), "Pull Request updated", pr.getHtmlUrl());
 
           notification = new Notification();
           notification.setId(pr.getId());

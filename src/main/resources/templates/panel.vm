@@ -1,0 +1,5 @@
+<html>
+<h3 style="width:200px">$title</h3>
+
+<p style="width:200px">$message</p>
+</html>
