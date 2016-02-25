@@ -1,10 +1,8 @@
 buildscript {
   repositories {
-    jcenter()
     mavenCentral()
   }
   dependencies {
-    classpath 'ca.cutterslade.gradle:gradle-dependency-analyze:1.0.3'
     classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.2.5.RELEASE'
   }
 }
@@ -12,7 +10,6 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'spring-boot'
-apply plugin: 'ca.cutterslade.analyze'
 
 jar {
   baseName = 'GitHubNotifier'
@@ -27,22 +24,12 @@ dependencies {
   compile 'com.fasterxml.jackson.core:jackson-annotations'
   compile 'com.fasterxml.jackson.core:jackson-databind'
   compile 'com.github.mfornos:humanize-slim:1.2.2'
-  compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
-  compile 'org.slf4j:slf4j-api'
-  compile 'org.springframework.boot:spring-boot'
-  compile 'org.springframework.boot:spring-boot-autoconfigure'
-  compile 'org.springframework.data:spring-data-commons'
-  compile 'org.springframework.data:spring-data-jpa'
-  compile 'org.springframework:spring-beans'
-  compile 'org.springframework:spring-context'
-  compile 'org.springframework:spring-web'
-  compile 'org.springframework:spring-webmvc'
-  compile 'org.springframework:spring-tx'
+  compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+  compile 'org.springframework.boot:spring-boot-starter-velocity'
+  compile 'org.springframework.boot:spring-boot-starter-web'
 
-  runtime 'ch.qos.logback:logback-classic'
   runtime 'com.h2database:h2'
   runtime 'com.zaxxer:HikariCP'
   runtime 'org.flywaydb:flyway-core'
-  runtime 'org.springframework.boot:spring-boot-starter-data-jpa'
-  runtime 'org.springframework.boot:spring-boot-starter-web'
+  runtime 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
 }
