@@ -45,6 +45,10 @@ public class GitHubClientWrapper {
 
     List<com.github.visola.githubnotifier.model.PullRequest> allPullRequests = new ArrayList<>();
     for (String repoFullName : repoFullNames) {
+      if (repoFullName.startsWith("null/")) {
+        continue;
+      }
+
       pullRequestService.getPullRequests(fromFullName(repoFullName), "open").stream()
         .map(com.github.visola.githubnotifier.model.PullRequest::new)
         .forEach(allPullRequests::add);
@@ -78,7 +82,7 @@ public class GitHubClientWrapper {
       try {
         return repositoryService.getRepository(owner, repoName);
       } catch (IOException ioe) {
-        throw new RuntimeException("Error while fetchin repository.", ioe);
+        throw new RuntimeException("Error while fetching repository.", ioe);
       }
     });
   }
