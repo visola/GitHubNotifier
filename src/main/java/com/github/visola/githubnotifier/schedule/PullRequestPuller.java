@@ -1,5 +1,7 @@
 package com.github.visola.githubnotifier.schedule;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +63,7 @@ public class PullRequestPuller {
   }
 
   @Scheduled(fixedDelay=10 * 60 * 1000)
-  public void updateAllPullRequests() {
+  public void updateAllPullRequests() throws IOException {
     synchronized (updatingAll) {
       updatingAll = true;
       for (PullRequest pr : prService.getPullRequests()) {

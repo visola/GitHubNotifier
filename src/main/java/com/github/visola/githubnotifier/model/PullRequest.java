@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 public class PullRequest {
 
   @Id
-  int id;
+  long id;
   int number;
   String title;
   String state;
@@ -29,6 +29,26 @@ public class PullRequest {
   Calendar updatedAt;
   @JoinColumn(name="base_sha") @ManyToOne(cascade=CascadeType.MERGE) Commit base;
   @JoinColumn(name="head_sha") @ManyToOne(cascade=CascadeType.MERGE) Commit head;
+
+  public PullRequest() {
+  }
+
+  public PullRequest(org.eclipse.egit.github.core.PullRequest pr) {
+    id = pr.getId();
+    number = pr.getNumber();
+    title = pr.getTitle();
+    state = pr.getState();
+    htmlUrl = pr.getHtmlUrl();
+
+    createdAt = Calendar.getInstance();
+    createdAt.setTime(pr.getCreatedAt());
+
+    updatedAt = Calendar.getInstance();
+    updatedAt.setTime(pr.getUpdatedAt());
+
+    base = new Commit(pr.getBase());
+    head = new Commit(pr.getHead());
+  }
 
   public Commit getBase() {
     return base;
@@ -46,7 +66,7 @@ public class PullRequest {
     return htmlUrl;
   }
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 
@@ -82,7 +102,7 @@ public class PullRequest {
     this.htmlUrl = htmlUrl;
   }
 
-  public void setId(int id) {
+  public void setId(long id) {
     this.id = id;
   }
 
