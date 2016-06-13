@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.github.visola.githubnotifier.model.PullRequest;
 
-public interface PullRequestRepository extends PagingAndSortingRepository<PullRequest, Integer>{
+public interface PullRequestRepository extends PagingAndSortingRepository<PullRequest, Long>{
 
   @Modifying(clearAutomatically = true)
   @Query("UPDATE PullRequest"

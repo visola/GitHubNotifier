@@ -12,15 +12,15 @@ import javax.persistence.Table;
 public class Notification {
 
   @Id
-  private int id;
+  private long id;
   @Column(name="last_notification")
   private Calendar lastNotification;
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(long id) {
     this.id = id;
   }
 

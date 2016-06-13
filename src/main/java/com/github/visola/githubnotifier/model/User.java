@@ -20,6 +20,16 @@ public class User {
   String name;
   @Column(name="avatar_url") String avatarUrl;
 
+  public User() {
+  }
+
+  public User(org.eclipse.egit.github.core.User user) {
+    id = user.getId();
+    login = user.getLogin();
+    name = user.getName();
+    avatarUrl = user.getAvatarUrl();
+  }
+
   public String getLogin() {
     return login;
   }
