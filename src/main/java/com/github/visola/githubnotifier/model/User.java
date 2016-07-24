@@ -23,13 +23,6 @@ public class User {
   public User() {
   }
 
-  public User(org.eclipse.egit.github.core.User user) {
-    id = user.getId();
-    login = user.getLogin();
-    name = user.getName();
-    avatarUrl = user.getAvatarUrl();
-  }
-
   public String getLogin() {
     return login;
   }

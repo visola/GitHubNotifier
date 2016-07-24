@@ -24,12 +24,6 @@ public class Repository {
   public Repository() {
   }
 
-  public Repository(org.eclipse.egit.github.core.Repository repository) {
-    fullName = repository.getOwner().getName() + "/" + repository.getName();
-    name = repository.getName();
-    htmlUrl = repository.getHtmlUrl();
-  }
-
   public String getName() {
     return name;
   }

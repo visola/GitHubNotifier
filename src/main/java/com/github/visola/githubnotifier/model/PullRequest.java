@@ -33,23 +33,6 @@ public class PullRequest {
   public PullRequest() {
   }
 
-  public PullRequest(org.eclipse.egit.github.core.PullRequest pr) {
-    id = pr.getId();
-    number = pr.getNumber();
-    title = pr.getTitle();
-    state = pr.getState();
-    htmlUrl = pr.getHtmlUrl();
-
-    createdAt = Calendar.getInstance();
-    createdAt.setTime(pr.getCreatedAt());
-
-    updatedAt = Calendar.getInstance();
-    updatedAt.setTime(pr.getUpdatedAt());
-
-    base = new Commit(pr.getBase());
-    head = new Commit(pr.getHead());
-  }
-
   public Commit getBase() {
     return base;
   }

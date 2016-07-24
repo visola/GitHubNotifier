@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.visola.githubnotifier.data.GitHubClientWrapper;
+import com.github.visola.githubnotifier.data.GitHubClient;
 import com.github.visola.githubnotifier.data.PullRequestRepository;
 import com.github.visola.githubnotifier.data.RepositoryRepository;
 import com.github.visola.githubnotifier.data.UserRepository;
@@ -20,13 +20,13 @@ import com.github.visola.githubnotifier.model.Repository;
 @Service
 public class PullRequestService {
 
-  private final GitHubClientWrapper gitClient;
+  private final GitHubClient gitClient;
   private final PullRequestRepository pullRequestRepository;
   private final RepositoryRepository repositoryRepository;
   private final UserRepository userRepository;
 
   @Autowired
-  public PullRequestService(GitHubClientWrapper gitClient,
+  public PullRequestService(GitHubClient gitClient,
                             PullRequestRepository pullRequestRepository,
                             RepositoryRepository repositoryRepository,
                             UserRepository userRepository) {
