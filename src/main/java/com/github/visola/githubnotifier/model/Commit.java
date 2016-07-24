@@ -6,8 +6,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.eclipse.egit.github.core.PullRequestMarker;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -27,14 +25,6 @@ public class Commit {
   @JoinColumn(name="repo_full_name") @JsonProperty("repo") @ManyToOne Repository repository;
 
   public Commit() {
-  }
-
-  public Commit(PullRequestMarker prMarker) {
-    sha = prMarker.getSha();
-    ref = prMarker.getRef();
-    label = prMarker.getLabel();
-    user = new User(prMarker.getUser());
-    repository = new Repository(prMarker.getRepo());
   }
 
   public String getSha() {
