@@ -15,15 +15,14 @@ import com.github.visola.githubnotifier.model.Configuration;
 
 public class ConfigurationPanel extends JPanel {
 
+  private static final long serialVersionUID = 1L;
   private static final int COLUMN_COUNT = 50;
 
-  private static final long serialVersionUID = 1L;
+  private final JTextField githubUrlTextField = new JTextField();
+  private final JPasswordField passwordTextField = new JPasswordField();
+  private final JTextField usernameTextField = new JTextField();
 
-  private JTextField githubUrlTextField = new JTextField();
-  private JPasswordField passwordTextField = new JPasswordField();
-  private JTextField usernameTextField = new JTextField();
-
-  public ConfigurationPanel(Optional<Configuration> configuration) {
+  public ConfigurationPanel() {
     setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
     setLayout(new GridBagLayout());
@@ -74,12 +73,6 @@ public class ConfigurationPanel extends JPanel {
     gbcPasswordTextField.gridy = 2;
     passwordTextField.setColumns(COLUMN_COUNT);
     add(passwordTextField, gbcPasswordTextField);
-
-    configuration.ifPresent(config -> {
-      githubUrlTextField.setText(config.getGithubUrl());
-      usernameTextField.setText(config.getUsername());
-      passwordTextField.setText(config.getPassword());
-    });
   }
 
   public Configuration getConfiguration() {
@@ -88,6 +81,19 @@ public class ConfigurationPanel extends JPanel {
     configuration.setUsername(usernameTextField.getText());
     configuration.setPassword(new String(passwordTextField.getPassword()));
     return configuration;
+  }
+
+  public void setConfiguration(Optional<Configuration> configuration) {
+    if (configuration.isPresent()) {
+      Configuration config = configuration.get();
+      githubUrlTextField.setText(config.getGithubUrl());
+      usernameTextField.setText(config.getUsername());
+      passwordTextField.setText(config.getPassword());
+    } else {
+      githubUrlTextField.setText("");
+      usernameTextField.setText("");
+      passwordTextField.setText("");
+    }
   }
 
 }

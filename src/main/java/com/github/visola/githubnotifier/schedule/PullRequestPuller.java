@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,14 +14,13 @@ import com.github.visola.githubnotifier.model.Notification;
 import com.github.visola.githubnotifier.model.PullRequest;
 import com.github.visola.githubnotifier.service.PullRequestService;
 import com.github.visola.githubnotifier.ui.PullRequestMenuManager;
-import com.github.visola.githubnotifier.ui.SystemTrayManager;
 
 @Component
+@Lazy
 public class PullRequestPuller {
 
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestPuller.class);
 
-  private final SystemTrayManager tray;
   private final PullRequestService prService;
   private final PullRequestMenuManager prMenuManager;
   private final NotificationRepository notificationRepository;
@@ -28,11 +28,9 @@ public class PullRequestPuller {
   private Boolean updatingAll = false;
 
   @Autowired
-  public PullRequestPuller(SystemTrayManager tray,
-                           PullRequestMenuManager prMenuManager,
+  public PullRequestPuller(PullRequestMenuManager prMenuManager,
                            PullRequestService prService,
                            NotificationRepository notificationRepository) {
-    this.tray = tray;
     this.prMenuManager = prMenuManager;
     this.prService = prService;
     this.notificationRepository = notificationRepository;
@@ -50,7 +48,7 @@ public class PullRequestPuller {
         LOG.debug("Checking PR: {}", pr.getTitle());
         Notification notification = notificationRepository.findOne(pr.getId());
         if (notification == null || pr.getUpdatedAt().after(notification.getLastNotification())) {
-          tray.showNotification(pr.getTitle(), "Pull Request updated", pr.getHtmlUrl());
+          //tray.showNotification(pr.getTitle(), "Pull Request updated", pr.getHtmlUrl());
 
           notification = new Notification();
           notification.setId(pr.getId());

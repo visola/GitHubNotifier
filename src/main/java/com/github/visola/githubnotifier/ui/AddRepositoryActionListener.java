@@ -6,12 +6,14 @@ import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.github.visola.githubnotifier.data.RepositoryRepository;
 import com.github.visola.githubnotifier.model.Repository;
 
 @Component
+@Lazy
 public class AddRepositoryActionListener implements ActionListener {
 
   private final RepositoryRepository repoRepository;

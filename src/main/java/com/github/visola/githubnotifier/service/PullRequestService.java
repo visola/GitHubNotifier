@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import com.github.visola.githubnotifier.data.UserRepository;
 import com.github.visola.githubnotifier.model.PullRequest;
 import com.github.visola.githubnotifier.model.Repository;
 
+@Lazy
 @Service
 public class PullRequestService {
 

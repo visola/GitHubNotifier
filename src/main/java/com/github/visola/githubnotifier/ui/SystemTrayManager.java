@@ -1,60 +1,44 @@
 package com.github.visola.githubnotifier.ui;
 
 import java.awt.AWTException;
-import java.awt.Dimension;
+import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
-import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import com.github.visola.githubnotifier.model.Configuration;
+import com.github.visola.githubnotifier.service.ConfigurationListener;
 import com.github.visola.githubnotifier.service.ConfigurationService;
 
 @Component
-public class SystemTrayManager {
+@Lazy
+public class SystemTrayManager implements ActionListener, ConfigurationListener {
 
-  private final ConfigurationMenuManager configurationMenuManager;
-  private final ConfigurationService configurationService;
-  private final PullRequestMenuManager pullRequestMenuManager;
-  private final RepositoryMenuManager repositoryMenuManager;
-  private final VelocityEngine velocityEngine;
+  private static final String ACTION_CONFIGURE = "configure";
+  private static final String ACTION_EXIT = "exit";
 
-  private PopupMenu popupMenu;
-  private TrayIcon trayIcon;
-  private List<NotificationFrameHolder> notificationFrames = new ArrayList<>();
+  private final ConfigurationFrame configurationFrame;
+  private final PopupMenu popupMenu;
+  private final TrayIcon trayIcon;
+  private final MenuItem configureMenu = new MenuItem("Settings");
+  private final MenuItem exitMenu = new MenuItem("Exit");
 
   @Autowired
-  public SystemTrayManager(ConfigurationMenuManager configurationMenuManager,
-                         ConfigurationService configurationService,
-                         PullRequestMenuManager pullRequestMenuManager,
-                         RepositoryMenuManager repositoryMenuManager,
-                         VelocityEngine velocityEngine) throws IOException, AWTException {
-    this.configurationMenuManager = configurationMenuManager;
-    this.configurationService = configurationService;
-    this.pullRequestMenuManager = pullRequestMenuManager;
-    this.repositoryMenuManager = repositoryMenuManager;
-    this.velocityEngine = velocityEngine;
-
-    initialize();
-  }
-
-  private void initialize() {
+  public SystemTrayManager(ConfigurationService configurationService, ConfigurationFrame configurationFrame) {
     try {
+      configurationService.addConfigurationListener(this);
+      this.configurationFrame = configurationFrame;
+
       SystemTray st = SystemTray.getSystemTray();
 
       trayIcon = new TrayIcon(ImageIO.read(SystemTrayManager.class.getResource("/static/img/octocat.png")));
@@ -63,78 +47,43 @@ public class SystemTrayManager {
       popupMenu = new PopupMenu();
       trayIcon.setPopupMenu(popupMenu);
 
-      configurationMenuManager.addConfigurationChangedListener(() -> this.initializeSubMenus());
-      pullRequestMenuManager.addPullRequestUpdateListener(() -> this.updatePullRequests());
-
-      initializeSubMenus();
+      buildMenu();
     } catch (IOException | AWTException e) {
-      throw new RuntimeException("Error while initializing system tray.", e);
+      throw new RuntimeException("Error while initializing System Tray.", e);
     }
   }
 
-  private void initializeSubMenus() {
-    popupMenu.removeAll();
+  @Override
+  public void configurationChanged(Optional<Configuration> configuration) {
+    
+  }
 
-    popupMenu.add(configurationMenuManager.getMenuItem());
+  public void addMenuItem(MenuItem item) {
+    
+  }
 
-    Optional<Configuration> configuration = configurationService.getConfiguration();
-    if (configuration.isPresent()) {
-      popupMenu.add(repositoryMenuManager.getMenu());
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    switch (e.getActionCommand()) {
+      case ACTION_CONFIGURE:
+        configurationFrame.setVisible(true);
+        break;
+      case ACTION_EXIT:
+        System.exit(0);
+        break;
     }
   }
 
-  public void showNotification(String title, String message, String link) {
-    Map<String, Object> model = new HashMap<String, Object>();
-    model.put("title", title);
-    model.put("message", message);
-    String html = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "panel.vm", "UTF-8", model);
+  private void buildMenu() {
+    configureMenu.setActionCommand(ACTION_CONFIGURE);
+    configureMenu.addActionListener(this);
+    popupMenu.add(configureMenu);
 
-    NotificationFrameHolder holder = new NotificationFrameHolder(html, link);
-    holder.notificationFrame.setVisible(true);
-    notificationFrames.add(holder);
+    popupMenu.addSeparator();
 
-    repositionFrames();
-  }
-
-  @Scheduled(fixedDelay=5 * 1000)
-  public void cleanNotifications() {
-    int removed = 0;
-    for (Iterator<NotificationFrameHolder> iterator = notificationFrames.iterator(); iterator.hasNext();) {
-      NotificationFrameHolder holder = iterator.next();
-      if (System.currentTimeMillis() - holder.created > 5000) {
-        iterator.remove();
-        holder.notificationFrame.dispose();
-        removed++;
-      }
-    }
-    if (removed > 0) {
-      repositionFrames();
-    }
-  }
-
-  private void repositionFrames() {
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    int marginRight = 20;
-    int verticalSpace = 10;
-    int lastEndPosition = 100;
-    for (int i = 0; i < notificationFrames.size(); i++) {
-      NotificationFrameHolder holder = notificationFrames.get(i);
-      int top = lastEndPosition + verticalSpace;
-      holder.notificationFrame.setLocation(screenSize.width - holder.notificationFrame.getWidth() - marginRight, top);
-      lastEndPosition = top + holder.notificationFrame.getHeight();
-    }
-  }
-
-  private void updatePullRequests() {
-    pullRequestMenuManager.getPullRequestMenuItems().forEach(mi -> popupMenu.add(mi));
-  }
-
-  private class NotificationFrameHolder {
-    final NotificationFrame notificationFrame;
-    final long created = System.currentTimeMillis();
-    public NotificationFrameHolder(String message, String link) {
-      this.notificationFrame = new NotificationFrame(message, link);
-    }
+    exitMenu.setActionCommand(ACTION_EXIT);
+    exitMenu.addActionListener(this);
+    popupMenu.add(exitMenu);
   }
 
 }
