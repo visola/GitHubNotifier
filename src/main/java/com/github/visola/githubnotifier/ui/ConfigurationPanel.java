@@ -16,9 +16,12 @@ import com.github.visola.githubnotifier.model.Configuration;
 
 public class ConfigurationPanel extends JPanel {
 
+  private static final long serialVersionUID = 1L;
   private static final int COLUMN_COUNT = 50;
 
-  private static final long serialVersionUID = 1L;
+  private final JTextField githubUrlTextField = new JTextField();
+  private final JPasswordField passwordTextField = new JPasswordField();
+  private final JTextField usernameTextField = new JTextField();
 
   private JTextField githubUrlTextField = new JTextField();
   private JPasswordField passwordTextField = new JPasswordField();
@@ -106,6 +109,19 @@ public class ConfigurationPanel extends JPanel {
     configuration.setPassword(new String(passwordTextField.getPassword()));
     configuration.setToken(tokenCheckBox.getModel().isSelected());
     return configuration;
+  }
+
+  public void setConfiguration(Optional<Configuration> configuration) {
+    if (configuration.isPresent()) {
+      Configuration config = configuration.get();
+      githubUrlTextField.setText(config.getGithubUrl());
+      usernameTextField.setText(config.getUsername());
+      passwordTextField.setText(config.getPassword());
+    } else {
+      githubUrlTextField.setText("");
+      usernameTextField.setText("");
+      passwordTextField.setText("");
+    }
   }
 
 }

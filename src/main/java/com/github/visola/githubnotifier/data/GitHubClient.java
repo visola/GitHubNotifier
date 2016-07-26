@@ -33,7 +33,7 @@ public class GitHubClient {
 
   @Autowired
   public GitHubClient(ConfigurationService configurationService, RestTemplate restTemplate) {
-    this.configuration = configurationService.getConfiguration();
+    this.configuration = configurationService.load();
     this.restTemplate = restTemplate;
   }
 
