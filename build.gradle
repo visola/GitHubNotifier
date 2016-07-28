@@ -30,6 +30,6 @@ dependencies {
 
   runtime 'com.h2database:h2'
   runtime 'com.zaxxer:HikariCP'
-  runtime 'org.flywaydb:flyway-core'
+  runtime 'org.liquibase:liquibase-core'
   runtime 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
 }

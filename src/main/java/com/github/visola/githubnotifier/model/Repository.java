@@ -1,9 +1,7 @@
 package com.github.visola.githubnotifier.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -12,14 +10,21 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy.class)
-@Table(name="repositories")
 public class Repository {
 
   @Id
-  @Column(name="full_name")
-  String fullName;
-  String name;
-  String htmlUrl;
+  private long id;
+  private String fullName;
+  private String name;
+  private String htmlUrl;
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
 
   public Repository() {
   }

@@ -9,8 +9,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.github.visola.githubnotifier.data.NotificationRepository;
-import com.github.visola.githubnotifier.model.Notification;
 import com.github.visola.githubnotifier.model.PullRequest;
 import com.github.visola.githubnotifier.service.PullRequestService;
 import com.github.visola.githubnotifier.ui.PullRequestMenuManager;
@@ -23,17 +21,14 @@ public class PullRequestPuller {
 
   private final PullRequestService prService;
   private final PullRequestMenuManager prMenuManager;
-  private final NotificationRepository notificationRepository;
 
   private Boolean updatingAll = false;
 
   @Autowired
   public PullRequestPuller(PullRequestMenuManager prMenuManager,
-                           PullRequestService prService,
-                           NotificationRepository notificationRepository) {
+                           PullRequestService prService) {
     this.prMenuManager = prMenuManager;
     this.prService = prService;
-    this.notificationRepository = notificationRepository;
   }
 
   @Scheduled(fixedDelay=30 * 1000)
@@ -46,15 +41,6 @@ public class PullRequestPuller {
       for (PullRequest pr : prService.getOpenPullRequests()) {
         prService.save(pr);
         LOG.debug("Checking PR: {}", pr.getTitle());
-        Notification notification = notificationRepository.findOne(pr.getId());
-        if (notification == null || pr.getUpdatedAt().after(notification.getLastNotification())) {
-          //tray.showNotification(pr.getTitle(), "Pull Request updated", pr.getHtmlUrl());
-
-          notification = new Notification();
-          notification.setId(pr.getId());
-          notification.setLastNotification(pr.getUpdatedAt());
-          notificationRepository.save(notification);
-        }
       }
       prMenuManager.updatePullRequests();
     }
