@@ -8,6 +8,7 @@ import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
@@ -15,9 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import com.github.visola.githubnotifier.model.Configuration;
+import com.github.visola.githubnotifier.service.ConfigurationListener;
+import com.github.visola.githubnotifier.service.ConfigurationService;
+
 @Component
 @Lazy
-public class SystemTrayManager implements ActionListener {
+public class SystemTrayManager implements ActionListener, ConfigurationListener {
 
   private static final String ACTION_CONFIGURE = "configure";
   private static final String ACTION_REPOSITORIES = "repositories";
@@ -33,8 +38,10 @@ public class SystemTrayManager implements ActionListener {
   private final MenuItem repositoriesMenu = new MenuItem("Repositories");
   private final MenuItem exitMenu = new MenuItem("Exit");
 
+  private Optional<Configuration> configuration;
+
   @Autowired
-  public SystemTrayManager(ConfigurationFrame configurationFrame, RepositoriesFrame repositoriesFrame) {
+  public SystemTrayManager(ConfigurationFrame configurationFrame, ConfigurationService configurationService, RepositoriesFrame repositoriesFrame) {
     try {
       this.configurationFrame = configurationFrame;
       this.repositoriesFrame = repositoriesFrame;
@@ -47,6 +54,10 @@ public class SystemTrayManager implements ActionListener {
       popupMenu = new PopupMenu();
       trayIcon.setPopupMenu(popupMenu);
 
+      configurationService.addConfigurationListener(this);
+      configuration = configurationService.load();
+
+      configureMenuItems();
       buildMenu();
     } catch (IOException | AWTException e) {
       throw new RuntimeException("Error while initializing System Tray.", e);
@@ -68,20 +79,31 @@ public class SystemTrayManager implements ActionListener {
     }
   }
 
-  private void buildMenu() {
+  private void configureMenuItems() {
     configureMenu.setActionCommand(ACTION_CONFIGURE);
     configureMenu.addActionListener(this);
-    popupMenu.add(configureMenu);
-
     repositoriesMenu.setActionCommand(ACTION_REPOSITORIES);
     repositoriesMenu.addActionListener(this);
-    popupMenu.add(repositoriesMenu);
-
-    popupMenu.addSeparator();
-
     exitMenu.setActionCommand(ACTION_EXIT);
     exitMenu.addActionListener(this);
+  }
+
+  private void buildMenu() {
+    popupMenu.removeAll();
+
+    popupMenu.add(configureMenu);
+
+    if (configuration.isPresent() && configuration.get().isValid()) {
+      popupMenu.add(repositoriesMenu);
+    }
+    popupMenu.addSeparator();
     popupMenu.add(exitMenu);
+  }
+
+  @Override
+  public void configurationChanged(Optional<Configuration> configuration) {
+    this.configuration = configuration;
+    buildMenu();
   }
 
 }

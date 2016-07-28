@@ -22,20 +22,23 @@ import org.springframework.web.client.RestTemplate;
 import com.github.visola.githubnotifier.model.Configuration;
 import com.github.visola.githubnotifier.model.PullRequest;
 import com.github.visola.githubnotifier.model.Repository;
+import com.github.visola.githubnotifier.service.ConfigurationListener;
 import com.github.visola.githubnotifier.service.ConfigurationService;
 
 @Service
-public class GitHubClient {
+public class GitHubClient implements ConfigurationListener {
 
   private static final Logger LOG = LoggerFactory.getLogger(GitHubClient.class);
 
   private static final String BASE_PATH = "/api/v3";
 
   private final RestTemplate restTemplate;
-  private final Optional<Configuration> configuration;
+
+  private Optional<Configuration> configuration;
 
   @Autowired
   public GitHubClient(ConfigurationService configurationService, RestTemplate restTemplate) {
+    configurationService.addConfigurationListener(this);
     this.configuration = configurationService.load();
     this.restTemplate = restTemplate;
   }
@@ -63,6 +66,11 @@ public class GitHubClient {
 
   public Optional<Repository> getRepoByFullNAme(String fullName) {
     return executeGet("/repos/"+fullName, Repository.class);
+  }
+
+  @Override
+  public void configurationChanged(Optional<Configuration> configuration) {
+    this.configuration = configuration;
   }
 
   private <T> Optional<T> executeGet(String path, Class<T> type) {
