@@ -13,12 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.github.visola.githubnotifier.model.Configuration;
 import com.github.visola.githubnotifier.model.PullRequest;
+import com.github.visola.githubnotifier.model.Repository;
 import com.github.visola.githubnotifier.service.ConfigurationService;
 
 @Service
@@ -56,6 +59,21 @@ public class GitHubClient {
       }
     }
     return pullRequestsResult;
+  }
+
+  public Optional<Repository> getRepoByFullNAme(String fullName) {
+    return executeGet("/repos/"+fullName, Repository.class);
+  }
+
+  private <T> Optional<T> executeGet(String path, Class<T> type) {
+    try {
+      return Optional.of(restTemplate.exchange(configuration.get().getGithubUrl()+BASE_PATH+path, HttpMethod.GET, createHttpEntity(), type).getBody());
+    } catch (HttpClientErrorException e) {
+      if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+        return Optional.empty();
+      }
+      throw e;
+    }
   }
 
   private HttpEntity<Void> createHttpEntity() {
