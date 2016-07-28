@@ -37,6 +37,7 @@ public class ConfigurationFrame extends JFrame implements ActionListener {
   @Autowired
   public ConfigurationFrame(ConfigurationService configurationService) {
     setAlwaysOnTop(true);
+    setLocationRelativeTo(null);
 
     this.configurationService = configurationService;
     this.addWindowListener(new ConfigurationLoader());

@@ -2,6 +2,9 @@ package com.github.visola.githubnotifier.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import com.google.common.base.Strings;
 
 @Entity
 public class Configuration {
@@ -10,6 +13,13 @@ public class Configuration {
   private String username;
   private String password;
   private String githubUrl;
+
+  @Transient
+  public boolean isValid() {
+    return !Strings.isNullOrEmpty(githubUrl)
+        && !Strings.isNullOrEmpty(username)
+        && !Strings.isNullOrEmpty(password);
+  }
 
   public String getGithubUrl() {
     return githubUrl;
