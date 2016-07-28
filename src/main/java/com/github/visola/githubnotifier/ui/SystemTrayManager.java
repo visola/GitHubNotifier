@@ -8,7 +8,6 @@ import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
@@ -16,28 +15,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.github.visola.githubnotifier.model.Configuration;
-import com.github.visola.githubnotifier.service.ConfigurationListener;
-import com.github.visola.githubnotifier.service.ConfigurationService;
-
 @Component
 @Lazy
-public class SystemTrayManager implements ActionListener, ConfigurationListener {
+public class SystemTrayManager implements ActionListener {
 
   private static final String ACTION_CONFIGURE = "configure";
+  private static final String ACTION_REPOSITORIES = "repositories";
   private static final String ACTION_EXIT = "exit";
 
   private final ConfigurationFrame configurationFrame;
+  private final RepositoriesFrame repositoriesFrame;
+
   private final PopupMenu popupMenu;
   private final TrayIcon trayIcon;
+
   private final MenuItem configureMenu = new MenuItem("Settings");
+  private final MenuItem repositoriesMenu = new MenuItem("Repositories");
   private final MenuItem exitMenu = new MenuItem("Exit");
 
   @Autowired
-  public SystemTrayManager(ConfigurationService configurationService, ConfigurationFrame configurationFrame) {
+  public SystemTrayManager(ConfigurationFrame configurationFrame, RepositoriesFrame repositoriesFrame) {
     try {
-      configurationService.addConfigurationListener(this);
       this.configurationFrame = configurationFrame;
+      this.repositoriesFrame = repositoriesFrame;
 
       SystemTray st = SystemTray.getSystemTray();
 
@@ -54,19 +54,13 @@ public class SystemTrayManager implements ActionListener, ConfigurationListener 
   }
 
   @Override
-  public void configurationChanged(Optional<Configuration> configuration) {
-    
-  }
-
-  public void addMenuItem(MenuItem item) {
-    
-  }
-
-  @Override
   public void actionPerformed(ActionEvent e) {
     switch (e.getActionCommand()) {
       case ACTION_CONFIGURE:
         configurationFrame.setVisible(true);
+        break;
+      case ACTION_REPOSITORIES:
+        repositoriesFrame.setVisible(true);
         break;
       case ACTION_EXIT:
         System.exit(0);
@@ -78,6 +72,10 @@ public class SystemTrayManager implements ActionListener, ConfigurationListener 
     configureMenu.setActionCommand(ACTION_CONFIGURE);
     configureMenu.addActionListener(this);
     popupMenu.add(configureMenu);
+
+    repositoriesMenu.setActionCommand(ACTION_REPOSITORIES);
+    repositoriesMenu.addActionListener(this);
+    popupMenu.add(repositoriesMenu);
 
     popupMenu.addSeparator();
 

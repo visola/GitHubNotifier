@@ -21,15 +21,15 @@ public class Repository {
   private String name;
   private String htmlUrl;
 
+  public Repository() {
+  }
+
   public long getId() {
     return id;
   }
 
   public void setId(long id) {
     this.id = id;
-  }
-
-  public Repository() {
   }
 
   public String getName() {
