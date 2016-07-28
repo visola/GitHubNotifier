@@ -1,1 +1,0 @@
-ALTER TABLE commits ALTER COLUMN repo_full_name VARCHAR(1024) NULL;

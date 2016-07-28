@@ -15,12 +15,21 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @Table(name="users")
 public class User {
 
-  @Id int id;
-  String login;
-  String name;
-  @Column(name="avatar_url") String avatarUrl;
+  @Id 
+  private long id;
+  private String login;
+  private String name;
+  private String avatarUrl;
 
   public User() {
+  }
+  
+  public String getName() {
+    return name;
+  }
+  
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getLogin() {
@@ -31,11 +40,11 @@ public class User {
     this.login = login;
   }
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(long id) {
     this.id = id;
   }
 

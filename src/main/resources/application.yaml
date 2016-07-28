@@ -1,9 +1,11 @@
+liquibase.change-log: classpath:/db/migrations-master.xml
+
 spring:
   datasource:
     url: jdbc:h2:file:./githubnotifier
     username: sa
     password: sa
 
-spring.jpa.hibernate.ddl-auto: none
+spring.jpa.hibernate.ddl-auto: validate
 
 logging.file: app.log

@@ -16,10 +16,18 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 public class Repository {
 
   @Id
-  @Column(name="full_name")
-  String fullName;
-  String name;
-  String htmlUrl;
+  private long id;
+  private String fullName;
+  private String name;
+  private String htmlUrl;
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
 
   public Repository() {
   }
