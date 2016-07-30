@@ -9,3 +9,7 @@ spring:
 spring.jpa.hibernate.ddl-auto: validate
 
 logging.file: app.log
+
+pull.schedule:
+  events: 30
+  pull-requests: 300
