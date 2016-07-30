@@ -28,9 +28,7 @@
       <column name="login" type="VARCHAR(1024)">
         <constraints nullable="false" />
       </column>
-      <column name="name" type="VARCHAR(1024)">
-        <constraints nullable="false" />
-      </column>
+      <column name="name" type="VARCHAR(1024)" />
       <column name="avatar_url" type="VARCHAR(256)">
         <constraints nullable="false" />
       </column>

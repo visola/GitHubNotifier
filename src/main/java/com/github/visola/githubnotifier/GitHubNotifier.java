@@ -6,12 +6,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
+import com.github.visola.githubnotifier.schedule.EventPuller;
 import com.github.visola.githubnotifier.ui.SystemTrayManager;
 
-@EnableScheduling
 @SpringBootApplication
 public class GitHubNotifier {
 
@@ -20,13 +21,17 @@ public class GitHubNotifier {
       .headless(false)
       .web(WebApplicationType.NONE)
       .run(args)
-      .getBean(SystemTrayManager.class)
-      .initialize();
+      .getBean(EventPuller.class);
   }
 
   @Bean
   public RestTemplate restTemplate() {
     return new RestTemplate();
+  }
+
+  @Bean
+  public TaskScheduler taskScheduler() {
+    return new ThreadPoolTaskScheduler();
   }
 
 }
