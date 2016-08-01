@@ -9,11 +9,26 @@ import com.google.common.base.Strings;
 @Entity
 public class Configuration {
 
+  private static final String GH_PUBLIC_API = "https://api.github.com";
+  private static final String GH_ENTERPRISE_BASE_PATH = "/api/v3";
+
   @Id
   private String username;
   private String password;
   private boolean token = false;
   private String githubUrl;
+
+  @Transient
+  public String getApiBase() {
+    if (!Strings.isNullOrEmpty(githubUrl)) {
+      if (githubUrl.startsWith(GH_PUBLIC_API)) {
+        return GH_PUBLIC_API + "/";
+      } else {
+        return githubUrl + GH_ENTERPRISE_BASE_PATH;
+      }
+    }
+    return null;
+  }
 
   @Transient
   public boolean isValid() {

@@ -30,8 +30,6 @@ public class GitHubClient implements ConfigurationListener {
 
   private static final Logger LOG = LoggerFactory.getLogger(GitHubClient.class);
 
-  private static final String BASE_PATH = "/api/v3";
-
   private final RestTemplate restTemplate;
 
   private Optional<Configuration> configuration;
@@ -45,7 +43,7 @@ public class GitHubClient implements ConfigurationListener {
 
   public PullRequest getPullRequest(String repoFullName, int id) {
     checkConfiguration();
-    return restTemplate.exchange(configuration.get().getGithubUrl()+BASE_PATH+"/repos/"+repoFullName+"/pulls/"+id, HttpMethod.GET, createHttpEntity(), PullRequest.class).getBody();
+    return restTemplate.exchange(configuration.get().getApiBase()+"/repos/"+repoFullName+"/pulls/"+id, HttpMethod.GET, createHttpEntity(), PullRequest.class).getBody();
   }
 
   public List<PullRequest> getPullRequests(Collection<String> repositoryFullNames) {
@@ -55,7 +53,7 @@ public class GitHubClient implements ConfigurationListener {
     for (String fullName: repositoryFullNames) {
       try {
         LOG.trace("Fetching PRs for repo {}", fullName);
-        List<PullRequest> pullRequests = Arrays.asList(restTemplate.exchange(configuration.get().getGithubUrl()+BASE_PATH+"/repos/"+fullName+"/pulls", HttpMethod.GET, createHttpEntity(), PullRequest[].class).getBody());
+        List<PullRequest> pullRequests = Arrays.asList(restTemplate.exchange(configuration.get().getApiBase()+"/repos/"+fullName+"/pulls", HttpMethod.GET, createHttpEntity(), PullRequest[].class).getBody());
         pullRequestsResult.addAll(pullRequests);
       } catch (Exception e) {
         LOG.error("Error while fetching data from repository {}.", fullName, e);
@@ -75,7 +73,7 @@ public class GitHubClient implements ConfigurationListener {
 
   private <T> Optional<T> executeGet(String path, Class<T> type) {
     try {
-      return Optional.of(restTemplate.exchange(configuration.get().getGithubUrl()+BASE_PATH+path, HttpMethod.GET, createHttpEntity(), type).getBody());
+      return Optional.of(restTemplate.exchange(configuration.get().getApiBase()+path, HttpMethod.GET, createHttpEntity(), type).getBody());
     } catch (HttpClientErrorException e) {
       if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
         return Optional.empty();
