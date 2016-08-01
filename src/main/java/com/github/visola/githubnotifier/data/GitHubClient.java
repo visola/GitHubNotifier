@@ -6,6 +6,7 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.github.visola.githubnotifier.model.Configuration;
+import com.github.visola.githubnotifier.model.Event;
 import com.github.visola.githubnotifier.model.PullRequest;
 import com.github.visola.githubnotifier.model.Repository;
 import com.github.visola.githubnotifier.service.ConfigurationListener;
@@ -69,6 +71,15 @@ public class GitHubClient implements ConfigurationListener {
   @Override
   public void configurationChanged(Optional<Configuration> configuration) {
     this.configuration = configuration;
+  }
+
+  public List<Event> getEvents(Set<String> repositoryFullNames) {
+    List<Event> result = new ArrayList<>();
+    for (String fullName : repositoryFullNames) {
+      List<Event> events = Arrays.asList(restTemplate.exchange(configuration.get().getApiBase()+"/repos/"+fullName+"/events", HttpMethod.GET, createHttpEntity(), Event[].class).getBody());
+      result.addAll(events);
+    }
+    return result;
   }
 
   private <T> Optional<T> executeGet(String path, Class<T> type) {

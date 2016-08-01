@@ -14,9 +14,11 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.github.visola.githubnotifier.model.Configuration;
+import com.github.visola.githubnotifier.model.Event;
 import com.github.visola.githubnotifier.model.PullRequest;
 import com.github.visola.githubnotifier.service.ConfigurationListener;
 import com.github.visola.githubnotifier.service.ConfigurationService;
+import com.github.visola.githubnotifier.service.EventService;
 import com.github.visola.githubnotifier.service.PullRequestService;
 
 @Component
@@ -25,50 +27,45 @@ public class EventPuller implements ConfigurationListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EventPuller.class);
 
+  private final EventService eventService;
   private final PullRequestService prService;
   private final TaskScheduler taskScheduler;
 
   private ScheduledFuture<?> eventPullFuture;
   private ScheduledFuture<?> pullRequestPullFuture;
 
+  private final long eventsInterval;
   private final long pullRequestInterval;
 
-  private Boolean updatingAll = false;
 
   @Autowired
   public EventPuller(ConfigurationService configurationService,
+                     EventService eventService,
                      PullRequestService prService,
                      TaskScheduler taskScheduler,
+                     @Value("${pull.schedule.events}") int eventIntervalInSeconds,
                      @Value("${pull.schedule.pull-requests}") int pullRequestIntervalInSeconds) {
-    this.prService = prService;
+    this.eventsInterval = TimeUnit.SECONDS.toMillis(eventIntervalInSeconds);
     this.pullRequestInterval = TimeUnit.SECONDS.toMillis(pullRequestIntervalInSeconds);
+
+    this.eventService = eventService;
+    this.prService = prService;
     this.taskScheduler = taskScheduler;
 
     configurationService.addConfigurationListener(this);
     schedulePulls(configurationService.load());
   }
 
-  public void checkOpenPullRequests() {
-    if (updatingAll == true) {
-      return;
-    }
-
-    synchronized (updatingAll) {
-      for (PullRequest pr : prService.getOpenPullRequests()) {
-        prService.save(pr);
-        LOGGER.debug("Checking PR: {}", pr.getTitle());
-      }
+  public void updateAllEvents() {
+    for (Event e : eventService.getEvents()) {
+      System.out.println(e.getId() + " - " + e.getType());
     }
   }
 
   public void updateAllPullRequests() {
     try {
-      synchronized (updatingAll) {
-        updatingAll = true;
-          for (PullRequest pr : prService.getPullRequests()) {
-            LOGGER.debug("Found PR: {}", pr.getTitle());
-          }
-        updatingAll = false;
+      for (PullRequest pr : prService.getPullRequests()) {
+        LOGGER.debug("Found PR: {}", pr.getTitle());
       }
     } catch (IOException e) {
       LOGGER.error("Error while updating all pull requests.", e);
@@ -83,6 +80,7 @@ public class EventPuller implements ConfigurationListener {
   private void schedulePulls(Optional<Configuration> configuration) {
     if (configuration.isPresent() && configuration.get().isValid()) {
       pullRequestPullFuture = taskScheduler.scheduleAtFixedRate(this::updateAllPullRequests, pullRequestInterval);
+      eventPullFuture = taskScheduler.scheduleAtFixedRate(this::updateAllEvents, eventsInterval);
     } else {
       if (eventPullFuture != null) {
         eventPullFuture.cancel(false);
