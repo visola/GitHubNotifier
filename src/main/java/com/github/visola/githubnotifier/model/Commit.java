@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonNaming(PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy.class)
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Commit {
 
   @Id
