@@ -11,6 +11,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,22 +25,19 @@ import com.github.visola.githubnotifier.model.Configuration;
 import com.github.visola.githubnotifier.model.Event;
 import com.github.visola.githubnotifier.model.PullRequest;
 import com.github.visola.githubnotifier.model.Repository;
-import com.github.visola.githubnotifier.service.ConfigurationListener;
-import com.github.visola.githubnotifier.service.ConfigurationService;
+import com.github.visola.githubnotifier.service.ConfigurationEvent;
 
 @Service
-public class GitHubClient implements ConfigurationListener {
+public class GitHubClient {
 
   private static final Logger LOG = LoggerFactory.getLogger(GitHubClient.class);
 
   private final RestTemplate restTemplate;
 
-  private Optional<Configuration> configuration;
+  private Optional<Configuration> configuration = Optional.empty();
 
   @Autowired
-  public GitHubClient(ConfigurationService configurationService, RestTemplate restTemplate) {
-    configurationService.addConfigurationListener(this);
-    this.configuration = configurationService.load();
+  public GitHubClient(RestTemplate restTemplate) {
     this.restTemplate = restTemplate;
   }
 
@@ -68,9 +66,9 @@ public class GitHubClient implements ConfigurationListener {
     return executeGet("/repos/"+fullName, Repository.class);
   }
 
-  @Override
-  public void configurationChanged(Optional<Configuration> configuration) {
-    this.configuration = configuration;
+  @EventListener
+  public void configurationChangedOrLoaded(ConfigurationEvent event) {
+    this.configuration =  event.getConfiguration();
   }
 
   public List<Event> getEvents(Set<String> repositoryFullNames) {

@@ -13,8 +13,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.github.visola.githubnotifier.schedule.EventPuller;
-import com.github.visola.githubnotifier.ui.SystemTrayManager;
+import com.github.visola.githubnotifier.service.ConfigurationService;
 
 @SpringBootApplication
 public class GitHubNotifier extends WebMvcConfigurerAdapter {
@@ -25,8 +24,7 @@ public class GitHubNotifier extends WebMvcConfigurerAdapter {
       .web(false)
       .run(args);
 
-    context.getBean(SystemTrayManager.class);
-    context.getBean(EventPuller.class);
+    context.getBean(ConfigurationService.class).load();
   }
 
   @Bean
