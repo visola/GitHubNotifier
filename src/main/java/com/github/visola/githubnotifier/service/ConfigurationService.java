@@ -1,37 +1,25 @@
 package com.github.visola.githubnotifier.service;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import com.github.visola.githubnotifier.data.ConfigurationRepository;
 import com.github.visola.githubnotifier.model.Configuration;
 
-@Lazy
 @Service
 public class ConfigurationService {
 
+  private final ApplicationEventPublisher applicationEventPublisher;
   private final ConfigurationRepository configurationRepository;
-  private final List<ConfigurationListener> configurationListeners = new ArrayList<>();
 
   @Autowired
-  public ConfigurationService(ConfigurationRepository configurationRepository) {
+  public ConfigurationService(ApplicationEventPublisher applicationEventPublisher, ConfigurationRepository configurationRepository) {
+    this.applicationEventPublisher = applicationEventPublisher;
     this.configurationRepository = configurationRepository;
-  }
-
-  public void addConfigurationListener(ConfigurationListener l) {
-    if (!configurationListeners.contains(l)) {
-      this.configurationListeners.add(l);
-    }
-  }
-
-  public void removeConfigurationListener(ConfigurationListener l) {
-    this.configurationListeners.remove(l);
   }
 
   public Optional<Configuration> load() {
@@ -41,12 +29,13 @@ public class ConfigurationService {
       break;
     }
 
+    applicationEventPublisher.publishEvent(new ConfigurationEvent(this, configuration));
     return configuration;
   }
 
   public void save(Configuration configuration) {
     configurationRepository.save(configuration);
-    configurationListeners.forEach(l -> l.configurationChanged(Optional.of(configuration)));
+    applicationEventPublisher.publishEvent(new ConfigurationEvent(this, Optional.of(configuration)));
   }
 
 }

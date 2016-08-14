@@ -9,21 +9,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.github.visola.githubnotifier.model.Configuration;
 import com.github.visola.githubnotifier.model.Event;
 import com.github.visola.githubnotifier.model.PullRequest;
-import com.github.visola.githubnotifier.service.ConfigurationListener;
-import com.github.visola.githubnotifier.service.ConfigurationService;
+import com.github.visola.githubnotifier.service.ConfigurationEvent;
 import com.github.visola.githubnotifier.service.EventService;
 import com.github.visola.githubnotifier.service.PullRequestService;
 
 @Component
-@Lazy
-public class EventPuller implements ConfigurationListener {
+public class EventPuller {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EventPuller.class);
 
@@ -39,8 +37,7 @@ public class EventPuller implements ConfigurationListener {
 
 
   @Autowired
-  public EventPuller(ConfigurationService configurationService,
-                     EventService eventService,
+  public EventPuller(EventService eventService,
                      PullRequestService prService,
                      TaskScheduler taskScheduler,
                      @Value("${pull.schedule.events}") int eventIntervalInSeconds,
@@ -51,9 +48,6 @@ public class EventPuller implements ConfigurationListener {
     this.eventService = eventService;
     this.prService = prService;
     this.taskScheduler = taskScheduler;
-
-    configurationService.addConfigurationListener(this);
-    schedulePulls(configurationService.load());
   }
 
   public void updateAllEvents() {
@@ -72,9 +66,9 @@ public class EventPuller implements ConfigurationListener {
     }
   }
 
-  @Override
-  public void configurationChanged(Optional<Configuration> configuration) {
-    schedulePulls(configuration);
+  @EventListener
+  public void configurationChangedOrLoaded(ConfigurationEvent event) {
+    schedulePulls(event.getConfiguration());
   }
 
   private void schedulePulls(Optional<Configuration> configuration) {

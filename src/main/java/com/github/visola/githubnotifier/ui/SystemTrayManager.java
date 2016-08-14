@@ -13,16 +13,14 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import com.github.visola.githubnotifier.model.Configuration;
-import com.github.visola.githubnotifier.service.ConfigurationListener;
-import com.github.visola.githubnotifier.service.ConfigurationService;
+import com.github.visola.githubnotifier.service.ConfigurationEvent;
 
 @Component
-@Lazy
-public class SystemTrayManager implements ActionListener, ConfigurationListener {
+public class SystemTrayManager implements ActionListener {
 
   private static final String ACTION_CONFIGURE = "configure";
   private static final String ACTION_REPOSITORIES = "repositories";
@@ -38,10 +36,10 @@ public class SystemTrayManager implements ActionListener, ConfigurationListener 
   private final MenuItem repositoriesMenu = new MenuItem("Repositories");
   private final MenuItem exitMenu = new MenuItem("Exit");
 
-  private Optional<Configuration> configuration;
+  private Optional<Configuration> configuration = Optional.empty();
 
   @Autowired
-  public SystemTrayManager(ConfigurationFrame configurationFrame, ConfigurationService configurationService, RepositoriesFrame repositoriesFrame) {
+  public SystemTrayManager(ConfigurationFrame configurationFrame, RepositoriesFrame repositoriesFrame) {
     try {
       this.configurationFrame = configurationFrame;
       this.repositoriesFrame = repositoriesFrame;
@@ -53,9 +51,6 @@ public class SystemTrayManager implements ActionListener, ConfigurationListener 
 
       popupMenu = new PopupMenu();
       trayIcon.setPopupMenu(popupMenu);
-
-      configurationService.addConfigurationListener(this);
-      configuration = configurationService.load();
 
       configureMenuItems();
       buildMenu();
@@ -79,6 +74,12 @@ public class SystemTrayManager implements ActionListener, ConfigurationListener 
     }
   }
 
+  @EventListener
+  public void configurationChangedOrLoaded(ConfigurationEvent event) {
+    this.configuration = event.getConfiguration();
+    buildMenu();
+  }
+
   private void configureMenuItems() {
     configureMenu.setActionCommand(ACTION_CONFIGURE);
     configureMenu.addActionListener(this);
@@ -98,12 +99,6 @@ public class SystemTrayManager implements ActionListener, ConfigurationListener 
     }
     popupMenu.addSeparator();
     popupMenu.add(exitMenu);
-  }
-
-  @Override
-  public void configurationChanged(Optional<Configuration> configuration) {
-    this.configuration = configuration;
-    buildMenu();
   }
 
 }

@@ -10,8 +10,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.visola.githubnotifier.schedule.EventPuller;
-import com.github.visola.githubnotifier.ui.SystemTrayManager;
+import com.github.visola.githubnotifier.service.ConfigurationService;
 
 @SpringBootApplication
 public class GitHubNotifier {
@@ -21,7 +20,7 @@ public class GitHubNotifier {
       .headless(false)
       .web(WebApplicationType.NONE)
       .run(args)
-      .getBean(EventPuller.class);
+      .getBean(ConfigurationService.class).load();
   }
 
   @Bean
