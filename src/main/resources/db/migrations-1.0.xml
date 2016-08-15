@@ -63,6 +63,9 @@
       <column name="created_at" type="TIMESTAMP">
         <constraints nullable="false" />
       </column>
+      <column name="payload" type="CLOB">
+        <constraints nullable="false" />
+      </column>
     </createTable>
   </changeSet>
 
