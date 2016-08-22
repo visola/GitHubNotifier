@@ -18,14 +18,24 @@ public class EventDeserializer extends JsonDeserializer<Event> {
     JsonNode node = codec.readTree(p);
 
     Event e = new Event();
-    e.setType(node.get("type").asText());
     e.setId(node.get("id").asLong());
 
     Calendar createdAt = Calendar.getInstance();
     createdAt.setTimeInMillis(node.get("created_at").asLong());
     e.setCreatedAt(createdAt);
 
-    e.setPayload(node.get("payload").toString());
+    EventType type = EventType.valueOf(node.get("type").asText());
+    e.setType(type);
+
+    switch (e.getType()) {
+      case PullRequestEvent:
+        PullRequestEventPayload payload = codec.treeToValue(node.get("payload"), PullRequestEventPayload.class);
+        payload.setEvent(e);
+        e.setPayload(payload);
+      default:
+        e.setPayload(new StringEventPayload(e, node.get("payload").toString()));
+        break;
+    }
 
     return e;
   }

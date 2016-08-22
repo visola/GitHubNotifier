@@ -3,8 +3,10 @@ package com.github.visola.githubnotifier.model;
 import java.util.Calendar;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -20,10 +22,12 @@ public class Event {
   @Id
   private Long id;
   private Calendar createdAt;
-  private String type;
 
-  @Lob
-  private String payload;
+  @Enumerated(EnumType.STRING)
+  private EventType type;
+
+  @OneToOne(mappedBy="event")
+  private EventPayload payload;
 
   public Long getId() {
     return id;
@@ -41,19 +45,19 @@ public class Event {
     this.createdAt = createdAt;
   }
 
-  public String getType() {
+  public EventType getType() {
     return type;
   }
 
-  public void setType(String type) {
+  public void setType(EventType type) {
     this.type = type;
   }
 
-  public String getPayload() {
+  public EventPayload getPayload() {
     return payload;
   }
 
-  public void setPayload(String payload) {
+  public void setPayload(EventPayload payload) {
     this.payload = payload;
   }
 

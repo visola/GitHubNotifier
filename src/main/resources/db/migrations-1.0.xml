@@ -52,23 +52,6 @@
     </createTable>
   </changeSet>
 
-  <changeSet id="Add events table" author="visola">
-    <createTable tableName="event">
-      <column name="id" type="BIGINT">
-        <constraints primaryKey="true" nullable="false"/>
-      </column>
-      <column name="type" type="VARCHAR(50)">
-        <constraints nullable="false" />
-      </column>
-      <column name="created_at" type="TIMESTAMP">
-        <constraints nullable="false" />
-      </column>
-      <column name="payload" type="CLOB">
-        <constraints nullable="false" />
-      </column>
-    </createTable>
-  </changeSet>
-
   <changeSet id="Add commits table" author="visola">
     <createTable tableName="commit">
       <column name="sha" type="VARCHAR(1024)">
@@ -115,6 +98,31 @@
       </column>
       <column name="head_sha" type="VARCHAR(1024)">
         <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="Add events table" author="visola">
+    <createTable tableName="event">
+      <column name="id" type="BIGINT">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="type" type="VARCHAR(50)">
+        <constraints nullable="false" />
+      </column>
+      <column name="created_at" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="Add string payload table" author="visola">
+    <createTable tableName="string_event_payload">
+      <column name="event_id" type="BIGINT">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="payload" type="CLOB">
+        <constraints nullable="false" />
       </column>
     </createTable>
   </changeSet>

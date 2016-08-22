@@ -12,7 +12,14 @@ public class EventProcessor {
   @EventListener
   public void eventsLoaded(EventsLoadedEvent eventsLoadedEvent) {
     for (Event e : eventsLoadedEvent.getEvents()) {
-      System.out.println(e.getPayload());
+      switch(e.getType()) {
+        case CommitCommentEvent:
+        case PullRequestEvent:
+        case PullRequestReviewCommentEvent:
+          break;
+        default:
+          break;
+      }
     }
   }
 
