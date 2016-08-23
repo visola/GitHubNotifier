@@ -118,10 +118,30 @@
 
   <changeSet id="Add string payload table" author="visola">
     <createTable tableName="string_event_payload">
-      <column name="event_id" type="BIGINT">
+      <column name="id" type="BIGINT">
         <constraints primaryKey="true" nullable="false"/>
       </column>
+      <column name="event_id" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
       <column name="payload" type="CLOB">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="Add pull request payload table" author="visola">
+    <createTable tableName="pull_request_event_payload">
+      <column name="id" type="BIGINT">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="event_id" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="action" type="VARCHAR(50)">
+        <constraints nullable="false" />
+      </column>
+      <column name="pull_request_id" type="BIGINT">
         <constraints nullable="false" />
       </column>
     </createTable>

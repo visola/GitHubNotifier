@@ -15,6 +15,8 @@ public abstract class EventPayload implements Serializable{
   private static final long serialVersionUID = 1L;
 
   @Id
+  private Long id;
+
   @OneToOne
   private Event event;
 
@@ -22,7 +24,16 @@ public abstract class EventPayload implements Serializable{
   }
 
   public EventPayload(Event event) {
+    this.id = event.getId();
     this.event = event;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public Event getEvent() {
@@ -31,6 +42,7 @@ public abstract class EventPayload implements Serializable{
 
   public void setEvent(Event event) {
     this.event = event;
+    this.id = event.getId();
   }
 
 }
