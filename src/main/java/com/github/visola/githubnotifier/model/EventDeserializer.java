@@ -32,6 +32,7 @@ public class EventDeserializer extends JsonDeserializer<Event> {
         PullRequestEventPayload payload = codec.treeToValue(node.get("payload"), PullRequestEventPayload.class);
         payload.setEvent(e);
         e.setPayload(payload);
+        break;
       default:
         e.setPayload(new StringEventPayload(e, node.get("payload").toString()));
         break;

@@ -2,6 +2,7 @@ package com.github.visola.githubnotifier.model;
 
 import java.util.Calendar;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -26,7 +27,7 @@ public class Event {
   @Enumerated(EnumType.STRING)
   private EventType type;
 
-  @OneToOne(mappedBy="event")
+  @OneToOne(mappedBy="event", cascade={CascadeType.MERGE, CascadeType.PERSIST})
   private EventPayload payload;
 
   public Long getId() {

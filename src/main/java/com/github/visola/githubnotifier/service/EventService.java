@@ -34,7 +34,10 @@ public class EventService {
         .collect(Collectors.toSet());
 
     List<Event> allEvents = gitHubClient.getEvents(repositoryFullNames);
-    eventRepository.save(allEvents);
+    for (Event e : allEvents) {
+      System.out.printf("Event ID: %d, Payload ID: %d%n", e.getId(), e.getPayload().getEvent().getId());
+      eventRepository.save(e);
+    }
     return allEvents;
   }
 
