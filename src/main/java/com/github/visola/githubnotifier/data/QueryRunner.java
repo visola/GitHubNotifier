@@ -11,7 +11,7 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import org.h2.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +31,7 @@ public class QueryRunner {
       try (Connection conn = dataSource.getConnection(); Statement st = conn.createStatement()) {
         System.out.print("> ");
         String query = in.readLine();
-        if (!StringUtils.isNullOrEmpty(query)) {
+        if (!StringUtils.isNotBlank(query)) {
           if (st.execute(query)) {
             ResultSet rs = st.getResultSet();
             ResultSetMetaData rsmd = rs.getMetaData();
