@@ -32,7 +32,6 @@ public class GitHubClientWrapper {
   @Autowired
   public GitHubClientWrapper(ConfigurationService configurationService) {
     this.configuration = configurationService.getConfiguration();
-    checkConfiguration();
 
    this.gitHubClient = new GitHubClient(configuration.get().getGithubUrl());
    this.gitHubClient.setCredentials(this.configuration.get().getUsername(), this.configuration.get().getPassword());
@@ -42,6 +41,7 @@ public class GitHubClientWrapper {
   }
 
   public List<com.github.visola.githubnotifier.model.PullRequest> getPullRequests(Set<String> repoFullNames) throws IOException {
+    checkConfiguration();
 
     List<com.github.visola.githubnotifier.model.PullRequest> allPullRequests = new ArrayList<>();
     for (String repoFullName : repoFullNames) {
@@ -58,6 +58,8 @@ public class GitHubClientWrapper {
   }
 
   public PullRequest getPullRequest(String repoFullName, int id) throws IOException {
+    checkConfiguration();
+
     String [] split = repoFullName.split("/");
     String owner = split[0];
     String repoName = split[1];
