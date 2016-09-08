@@ -33,11 +33,17 @@ public class GitHubClientWrapper {
   public GitHubClientWrapper(ConfigurationService configurationService) {
     this.configuration = configurationService.getConfiguration();
 
-   this.gitHubClient = new GitHubClient(configuration.get().getGithubUrl());
-   this.gitHubClient.setCredentials(this.configuration.get().getUsername(), this.configuration.get().getPassword());
-   
-   pullRequestService = new PullRequestService(gitHubClient);
-   repositoryService = new RepositoryService(gitHubClient);
+    if (configuration.isPresent()) {
+      this.gitHubClient = new GitHubClient(configuration.get().getGithubUrl());
+      this.gitHubClient.setCredentials(this.configuration.get().getUsername(), this.configuration.get().getPassword());
+
+      pullRequestService = new PullRequestService(gitHubClient);
+      repositoryService = new RepositoryService(gitHubClient);
+    } else {
+      gitHubClient = null;
+      pullRequestService = null;
+      repositoryService = null;
+    }
   }
 
   public List<com.github.visola.githubnotifier.model.PullRequest> getPullRequests(Set<String> repoFullNames) throws IOException {
