@@ -35,7 +35,13 @@ public class GitHubClientWrapper {
 
     if (configuration.isPresent()) {
       this.gitHubClient = new GitHubClient(configuration.get().getGithubUrl());
-      this.gitHubClient.setCredentials(this.configuration.get().getUsername(), this.configuration.get().getPassword());
+
+      Configuration config = this.configuration.get();
+      if (config.isToken()) {
+        this.gitHubClient.setOAuth2Token(config.getPassword());
+      } else {
+        this.gitHubClient.setCredentials(this.configuration.get().getUsername(), this.configuration.get().getPassword());
+      }
 
       pullRequestService = new PullRequestService(gitHubClient);
       repositoryService = new RepositoryService(gitHubClient);

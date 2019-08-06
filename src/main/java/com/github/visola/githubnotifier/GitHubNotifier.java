@@ -16,12 +16,12 @@ import com.github.visola.githubnotifier.ui.SystemTrayManager;
 public class GitHubNotifier {
 
   public static void main(String[] args) throws BeansException {
-    ApplicationContext context = new SpringApplicationBuilder(GitHubNotifier.class)
+    new SpringApplicationBuilder(GitHubNotifier.class)
       .headless(false)
       .web(WebApplicationType.NONE)
-      .run(args);
-
-    context.getBean(SystemTrayManager.class);
+      .run(args)
+      .getBean(SystemTrayManager.class)
+      .initialize();
   }
 
   @Bean

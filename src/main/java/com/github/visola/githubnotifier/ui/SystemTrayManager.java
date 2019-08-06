@@ -44,11 +44,9 @@ public class SystemTrayManager {
     this.configurationService = configurationService;
     this.pullRequestMenuManager = pullRequestMenuManager;
     this.repositoryMenuManager = repositoryMenuManager;
-
-    initialize();
   }
 
-  private void initialize() {
+  public void initialize() {
     try {
       SystemTray st = SystemTray.getSystemTray();
 

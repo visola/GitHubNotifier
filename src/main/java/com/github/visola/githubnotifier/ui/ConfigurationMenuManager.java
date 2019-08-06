@@ -31,7 +31,7 @@ public class ConfigurationMenuManager implements ActionListener {
     ConfigurationPanel panel = new ConfigurationPanel(configurationService.getConfiguration());
     JOptionPane.showMessageDialog(null, panel);
     configurationService.save(panel.getConfiguration());
-    configurationListeners.forEach(c->c.run());
+    configurationListeners.forEach(Runnable::run);
   }
 
   public MenuItem getMenuItem() {
