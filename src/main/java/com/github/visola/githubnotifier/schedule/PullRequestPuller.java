@@ -1,6 +1,7 @@
 package com.github.visola.githubnotifier.schedule;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +49,11 @@ public class PullRequestPuller {
       for (PullRequest pr : prService.getOpenPullRequests()) {
         prService.save(pr);
         LOG.debug("Checking PR: {}", pr.getTitle());
-        Notification notification = notificationRepository.findOne(pr.getId());
-        if (notification == null || pr.getUpdatedAt().after(notification.getLastNotification())) {
+        Optional<Notification> maybeNotification = notificationRepository.findById(pr.getId());
+        if (!maybeNotification.isPresent() || pr.getUpdatedAt().after(maybeNotification.get().getLastNotification())) {
           tray.showNotification(pr.getTitle(), "Pull Request updated", pr.getHtmlUrl());
 
-          notification = new Notification();
+          Notification notification = new Notification();
           notification.setId(pr.getId());
           notification.setLastNotification(pr.getUpdatedAt());
           notificationRepository.save(notification);

@@ -6,6 +6,7 @@ import java.awt.Insets;
 import java.util.Optional;
 
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -22,6 +23,7 @@ public class ConfigurationPanel extends JPanel {
   private JTextField githubUrlTextField = new JTextField();
   private JPasswordField passwordTextField = new JPasswordField();
   private JTextField usernameTextField = new JTextField();
+  private JCheckBox tokenCheckBox = new JCheckBox();
 
   public ConfigurationPanel(Optional<Configuration> configuration) {
     setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -75,10 +77,25 @@ public class ConfigurationPanel extends JPanel {
     passwordTextField.setColumns(COLUMN_COUNT);
     add(passwordTextField, gbcPasswordTextField);
 
+    GridBagConstraints gbcTokenLabel = new GridBagConstraints();
+    gbcTokenLabel.anchor = GridBagConstraints.EAST;
+    gbcTokenLabel.insets = new Insets(0, 0, 0, 5);
+    gbcTokenLabel.gridx = 0;
+    gbcTokenLabel.gridy = 3;
+    JLabel tokenLabel = new JLabel("Token");
+    add(tokenLabel, gbcTokenLabel);
+
+    GridBagConstraints gbcTokenTextField = new GridBagConstraints();
+    gbcTokenTextField.fill = GridBagConstraints.BOTH;
+    gbcTokenTextField.gridx = 1;
+    gbcTokenTextField.gridy = 3;
+    add(tokenCheckBox, gbcTokenTextField);
+
     configuration.ifPresent(config -> {
       githubUrlTextField.setText(config.getGithubUrl());
       usernameTextField.setText(config.getUsername());
       passwordTextField.setText(config.getPassword());
+      tokenCheckBox.getModel().setSelected(config.isToken());
     });
   }
 
@@ -87,6 +104,7 @@ public class ConfigurationPanel extends JPanel {
     configuration.setGithubUrl(githubUrlTextField.getText());
     configuration.setUsername(usernameTextField.getText());
     configuration.setPassword(new String(passwordTextField.getPassword()));
+    configuration.setToken(tokenCheckBox.getModel().isSelected());
     return configuration;
   }
 

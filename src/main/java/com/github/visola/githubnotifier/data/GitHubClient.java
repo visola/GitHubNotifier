@@ -60,8 +60,13 @@ public class GitHubClient {
 
   private HttpEntity<Void> createHttpEntity() {
     HttpHeaders headers = new HttpHeaders();
-    String usernamePassword = configuration.get().getUsername()+":"+configuration.get().getPassword();
-    headers.add("Authorization", "Basic "+Base64.getEncoder().encodeToString(usernamePassword.getBytes()));
+    Configuration config = configuration.get();
+    if (config.isToken()) {
+      headers.add("Authorization", "Token "+config.getPassword());
+    } else {
+      String usernamePassword = configuration.get().getUsername()+":"+configuration.get().getPassword();
+      headers.add("Authorization", "Basic "+Base64.getEncoder().encodeToString(usernamePassword.getBytes()));
+    }
     headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
     HttpEntity<Void> entity = new HttpEntity<>(headers);
     return entity;

@@ -1,6 +1,7 @@
 CREATE TABLE configuration (
   username VARCHAR(512) PRIMARY KEY,
   password VARCHAR(512) NOT NULL,
+  token BOOLEAN NOT NULL,
   github_url VARCHAR(1025) NOT NULL
 );
 

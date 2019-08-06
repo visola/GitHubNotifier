@@ -9,6 +9,7 @@ public class Configuration {
   @Id
   private String username;
   private String password;
+  private boolean token = false;
   private String githubUrl;
 
   public String getGithubUrl() {
@@ -33,6 +34,14 @@ public class Configuration {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public boolean isToken() {
+    return token;
+  }
+
+  public void setToken(boolean token) {
+    this.token = token;
   }
 
 }
