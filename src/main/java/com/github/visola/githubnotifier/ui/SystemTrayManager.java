@@ -16,11 +16,9 @@ import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import com.github.visola.githubnotifier.model.Configuration;
 import com.github.visola.githubnotifier.service.ConfigurationService;
@@ -32,7 +30,6 @@ public class SystemTrayManager {
   private final ConfigurationService configurationService;
   private final PullRequestMenuManager pullRequestMenuManager;
   private final RepositoryMenuManager repositoryMenuManager;
-  private final VelocityEngine velocityEngine;
 
   private PopupMenu popupMenu;
   private TrayIcon trayIcon;
@@ -42,13 +39,11 @@ public class SystemTrayManager {
   public SystemTrayManager(ConfigurationMenuManager configurationMenuManager,
                          ConfigurationService configurationService,
                          PullRequestMenuManager pullRequestMenuManager,
-                         RepositoryMenuManager repositoryMenuManager,
-                         VelocityEngine velocityEngine) throws IOException, AWTException {
+                         RepositoryMenuManager repositoryMenuManager) throws IOException, AWTException {
     this.configurationMenuManager = configurationMenuManager;
     this.configurationService = configurationService;
     this.pullRequestMenuManager = pullRequestMenuManager;
     this.repositoryMenuManager = repositoryMenuManager;
-    this.velocityEngine = velocityEngine;
 
     initialize();
   }
@@ -87,7 +82,10 @@ public class SystemTrayManager {
     Map<String, Object> model = new HashMap<String, Object>();
     model.put("title", title);
     model.put("message", message);
-    String html = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "panel.vm", "UTF-8", model);
+    String html = "<html>"
+            + "<h3 style=\"width:200px\">" + title + "</h3>"
+            + "<p style=\"width:200px\">" + message + "</p>"
+            + "</html>";
 
     NotificationFrameHolder holder = new NotificationFrameHolder(html, link);
     holder.notificationFrame.setVisible(true);
