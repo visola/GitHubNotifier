@@ -56,14 +56,15 @@ public class GitHubClient {
     checkConfiguration();
     LOG.debug("Fetching PR data...");
     List<PullRequest> pullRequestsResult = new ArrayList<>();
-    for (String fullName: repositoryFullNames) {
+    for (String fullName : repositoryFullNames) {
       try {
         LOG.trace("Fetching PRs for repo {}", fullName);
         List<PullRequest> pullRequests = restTemplate.exchange(
             configuration.get().getApiBase() + "/repos/" + fullName + "/pulls",
             HttpMethod.GET,
             createHttpEntity(),
-            new ParameterizedTypeReference<List<PullRequest>>() {}
+            new ParameterizedTypeReference<List<PullRequest>>() {
+            }
         ).getBody();
         pullRequestsResult.addAll(pullRequests);
       } catch (Exception e) {
@@ -74,7 +75,7 @@ public class GitHubClient {
   }
 
   public Optional<Repository> getRepoByFullNAme(String fullName) {
-    return executeGet("/repos/"+fullName, Repository.class);
+    return executeGet("/repos/" + fullName, Repository.class);
   }
 
   @EventListener
@@ -86,10 +87,10 @@ public class GitHubClient {
     List<Event> result = new ArrayList<>();
     for (String fullName : repositoryFullNames) {
       List<Event> events = restTemplate.exchange(
-        configuration.get().getApiBase() + "/repos/" + fullName + "/events",
-        HttpMethod.GET,
-        createHttpEntity(),
-        new ParameterizedTypeReference<List<Event>>() {}
+          configuration.get().getApiBase() + "/repos/" + fullName + "/events",
+          HttpMethod.GET,
+          createHttpEntity(),
+          new ParameterizedTypeReference<List<Event>>() {}
       ).getBody();
       if (events == null) {
         throw new RuntimeException("Events body is empty for repo: " + fullName);
@@ -104,10 +105,10 @@ public class GitHubClient {
     try {
       return Optional.ofNullable(
           restTemplate.exchange(
-            configuration.get().getApiBase() + path,
-            HttpMethod.GET,
-            createHttpEntity(),
-            type
+              configuration.get().getApiBase() + path,
+              HttpMethod.GET,
+              createHttpEntity(),
+              type
           ).getBody()
       );
     } catch (HttpClientErrorException e) {
@@ -122,9 +123,9 @@ public class GitHubClient {
     HttpHeaders headers = new HttpHeaders();
     Configuration config = configuration.get();
     if (config.isToken()) {
-      headers.add("Authorization", "Token "+config.getPassword());
+      headers.add("Authorization", "Token " + config.getPassword());
     } else {
-      String usernamePassword = config.getUsername()+":" + config.getPassword();
+      String usernamePassword = config.getUsername() + ":" + config.getPassword();
       headers.add(
           "Authorization",
           "Basic " + Base64.getEncoder().encodeToString(usernamePassword.getBytes())
