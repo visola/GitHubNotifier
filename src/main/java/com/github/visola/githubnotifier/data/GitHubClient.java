@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -43,7 +44,12 @@ public class GitHubClient {
 
   public PullRequest getPullRequest(String repoFullName, int id) {
     checkConfiguration();
-    return restTemplate.exchange(configuration.get().getApiBase()+"/repos/"+repoFullName+"/pulls/"+id, HttpMethod.GET, createHttpEntity(), PullRequest.class).getBody();
+    return restTemplate.exchange(
+        configuration.get().getApiBase() + "/repos/" + repoFullName + "/pulls/" + id,
+        HttpMethod.GET,
+        createHttpEntity(),
+        PullRequest.class
+    ).getBody();
   }
 
   public List<PullRequest> getPullRequests(Collection<String> repositoryFullNames) {
@@ -53,7 +59,12 @@ public class GitHubClient {
     for (String fullName: repositoryFullNames) {
       try {
         LOG.trace("Fetching PRs for repo {}", fullName);
-        List<PullRequest> pullRequests = Arrays.asList(restTemplate.exchange(configuration.get().getApiBase()+"/repos/"+fullName+"/pulls", HttpMethod.GET, createHttpEntity(), PullRequest[].class).getBody());
+        List<PullRequest> pullRequests = restTemplate.exchange(
+            configuration.get().getApiBase() + "/repos/" + fullName + "/pulls",
+            HttpMethod.GET,
+            createHttpEntity(),
+            new ParameterizedTypeReference<List<PullRequest>>() {}
+        ).getBody();
         pullRequestsResult.addAll(pullRequests);
       } catch (Exception e) {
         LOG.error("Error while fetching data from repository {}.", fullName, e);
@@ -68,21 +79,37 @@ public class GitHubClient {
 
   @EventListener
   public void configurationChangedOrLoaded(ConfigurationEvent event) {
-    this.configuration =  event.getConfiguration();
+    this.configuration = event.getConfiguration();
   }
 
   public List<Event> getEvents(Set<String> repositoryFullNames) {
     List<Event> result = new ArrayList<>();
     for (String fullName : repositoryFullNames) {
-      List<Event> events = Arrays.asList(restTemplate.exchange(configuration.get().getApiBase()+"/repos/"+fullName+"/events", HttpMethod.GET, createHttpEntity(), Event[].class).getBody());
-      result.addAll(events);
+      List<Event> events = restTemplate.exchange(
+        configuration.get().getApiBase() + "/repos/" + fullName + "/events",
+        HttpMethod.GET,
+        createHttpEntity(),
+        new ParameterizedTypeReference<List<Event>>() {}
+      ).getBody();
+      if (events == null) {
+        throw new RuntimeException("Events body is empty for repo: " + fullName);
+      } else {
+        result.addAll(events);
+      }
     }
     return result;
   }
 
   private <T> Optional<T> executeGet(String path, Class<T> type) {
     try {
-      return Optional.of(restTemplate.exchange(configuration.get().getApiBase()+path, HttpMethod.GET, createHttpEntity(), type).getBody());
+      return Optional.ofNullable(
+          restTemplate.exchange(
+            configuration.get().getApiBase() + path,
+            HttpMethod.GET,
+            createHttpEntity(),
+            type
+          ).getBody()
+      );
     } catch (HttpClientErrorException e) {
       if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
         return Optional.empty();
@@ -97,8 +124,11 @@ public class GitHubClient {
     if (config.isToken()) {
       headers.add("Authorization", "Token "+config.getPassword());
     } else {
-      String usernamePassword = configuration.get().getUsername()+":"+configuration.get().getPassword();
-      headers.add("Authorization", "Basic "+Base64.getEncoder().encodeToString(usernamePassword.getBytes()));
+      String usernamePassword = config.getUsername()+":" + config.getPassword();
+      headers.add(
+          "Authorization",
+          "Basic " + Base64.getEncoder().encodeToString(usernamePassword.getBytes())
+      );
     }
     headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
     HttpEntity<Void> entity = new HttpEntity<>(headers);

@@ -1,4 +1,4 @@
-liquibase.change-log: classpath:/db/migrations-master.xml
+spring.liquibase.change-log: classpath:/db/migrations-master.xml
 
 spring:
   datasource:

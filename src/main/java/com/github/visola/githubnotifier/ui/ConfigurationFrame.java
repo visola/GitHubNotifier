@@ -28,7 +28,7 @@ public class ConfigurationFrame extends JFrame implements ActionListener {
 
   private static final String ACTION_SAVE = "save";
 
-  private final ConfigurationPanel configurationPanel = new ConfigurationPanel();
+  private final ConfigurationPanel configurationPanel;
   private final JButton btSave = new JButton("Save");
   private final JButton btCancel = new JButton("Cancel");
 
@@ -45,6 +45,7 @@ public class ConfigurationFrame extends JFrame implements ActionListener {
     JComponent container = (JComponent) getContentPane();
     container.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
+    configurationPanel = new ConfigurationPanel(configurationService.load());
     add(configurationPanel, BorderLayout.CENTER);
 
     JPanel buttonsPane = new JPanel();

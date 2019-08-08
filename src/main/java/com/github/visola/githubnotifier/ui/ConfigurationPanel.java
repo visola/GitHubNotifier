@@ -22,10 +22,6 @@ public class ConfigurationPanel extends JPanel {
   private final JTextField githubUrlTextField = new JTextField();
   private final JPasswordField passwordTextField = new JPasswordField();
   private final JTextField usernameTextField = new JTextField();
-
-  private JTextField githubUrlTextField = new JTextField();
-  private JPasswordField passwordTextField = new JPasswordField();
-  private JTextField usernameTextField = new JTextField();
   private JCheckBox tokenCheckBox = new JCheckBox();
 
   public ConfigurationPanel(Optional<Configuration> configuration) {

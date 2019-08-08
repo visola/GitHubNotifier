@@ -39,7 +39,6 @@ public class EventPuller {
   private final long eventsInterval;
   private final long pullRequestInterval;
 
-
   @Autowired
   public EventPuller(ApplicationEventPublisher applicationEventPublisher,
                      EventService eventService,
@@ -75,10 +74,7 @@ public class EventPuller {
 
   @EventListener
   public void configurationChangedOrLoaded(ConfigurationEvent event) {
-    schedulePulls(event.getConfiguration());
-  }
-
-  private void schedulePulls(Optional<Configuration> configuration) {
+    Optional<Configuration> configuration = event.getConfiguration();
     if (configuration.isPresent() && configuration.get().isValid()) {
       pullRequestPullFuture = taskScheduler.scheduleAtFixedRate(this::updateAllPullRequests, pullRequestInterval);
       eventPullFuture = taskScheduler.scheduleAtFixedRate(this::updateAllEvents, eventsInterval);
