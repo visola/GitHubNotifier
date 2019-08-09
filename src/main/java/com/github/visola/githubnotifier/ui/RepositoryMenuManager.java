@@ -62,6 +62,7 @@ public class RepositoryMenuManager {
 
   private void updateRepositoriesMenu() {
     repositoriesMenu.removeAll();
+    repositoriesMenu.add(manageMenu);
 
     repositoryService.findAllOrderByFullName().stream()
         .map(this::createRepositoryMenuItem)
