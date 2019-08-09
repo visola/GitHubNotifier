@@ -17,14 +17,16 @@ public class ConfigurationService {
   private final ConfigurationRepository configurationRepository;
 
   @Autowired
-  public ConfigurationService(ApplicationEventPublisher applicationEventPublisher, ConfigurationRepository configurationRepository) {
+  public ConfigurationService(ApplicationEventPublisher applicationEventPublisher,
+      ConfigurationRepository configurationRepository) {
     this.applicationEventPublisher = applicationEventPublisher;
     this.configurationRepository = configurationRepository;
   }
 
   public Optional<Configuration> load() {
     Optional<Configuration> configuration = Optional.empty();
-    for (Iterator<Configuration> it = configurationRepository.findAll().iterator(); it.hasNext();) {
+    for (Iterator<Configuration> it = configurationRepository.findAll().iterator();
+        it.hasNext(); ) {
       configuration = Optional.of(it.next());
       break;
     }
@@ -35,7 +37,8 @@ public class ConfigurationService {
 
   public void save(Configuration configuration) {
     configurationRepository.save(configuration);
-    applicationEventPublisher.publishEvent(new ConfigurationEvent(this, Optional.of(configuration)));
+    applicationEventPublisher
+        .publishEvent(new ConfigurationEvent(this, Optional.of(configuration)));
   }
 
 }

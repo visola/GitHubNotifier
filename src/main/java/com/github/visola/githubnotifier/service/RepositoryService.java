@@ -20,7 +20,9 @@ public class RepositoryService {
   private final RepositoryRepository repoRepository;
 
   @Autowired
-  public RepositoryService(GitHubClient gitHubClient, PullRequestRepository pullRequestRepository, RepositoryRepository repoRepository) {
+  public RepositoryService(
+      GitHubClient gitHubClient, PullRequestRepository pullRequestRepository,
+      RepositoryRepository repoRepository) {
     this.gitHubClient = gitHubClient;
     this.pullRequestRepository = pullRequestRepository;
     this.repoRepository = repoRepository;
