@@ -9,8 +9,6 @@ import java.awt.MenuItem;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +22,6 @@ public class RepositoryMenuManager {
 
   private final MenuItem manageMenu = new MenuItem("Manage Repositories");
   private Menu repositoriesMenu;
-  private List<MenuItem> repositoryMenuList = new ArrayList<>();
   private final RepositoryService repositoryService;
 
   @Autowired
@@ -64,13 +61,11 @@ public class RepositoryMenuManager {
   }
 
   private void updateRepositoriesMenu() {
-    repositoryMenuList.forEach(repositoriesMenu::remove);
+    repositoriesMenu.removeAll();
 
-    for (Repository repository : repositoryService.findAllOrderByFullName()) {
-      MenuItem repositoryMenuItem = createRepositoryMenuItem(repository);
-      repositoriesMenu.add(repositoryMenuItem);
-      repositoryMenuList.add(repositoryMenuItem);
-    }
+    repositoryService.findAllOrderByFullName().stream()
+        .map(this::createRepositoryMenuItem)
+        .forEach(repositoriesMenu::add);
   }
 
 }

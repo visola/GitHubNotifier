@@ -23,6 +23,7 @@ public class SystemTrayManager implements ActionListener {
   private static final String ACTION_EXIT = "exit";
 
   private final ConfigurationFrame configurationFrame;
+  private final PullRequestMenuManager pullRequestMenuManager;
   private final RepositoryMenuManager repositoryMenuManager;
 
   private final PopupMenu popupMenu;
@@ -35,15 +36,18 @@ public class SystemTrayManager implements ActionListener {
 
   @Autowired
   public SystemTrayManager(ConfigurationFrame configurationFrame,
+      PullRequestMenuManager pullRequestMenuManager,
       RepositoryMenuManager repositoryMenuManager) {
 
-      this.configurationFrame = configurationFrame;
-      this.repositoryMenuManager = repositoryMenuManager;
+    this.configurationFrame = configurationFrame;
+    this.pullRequestMenuManager = pullRequestMenuManager;
+    this.repositoryMenuManager = repositoryMenuManager;
 
-      SystemTray st = SystemTray.getSystemTray();
+    SystemTray st = SystemTray.getSystemTray();
 
     try {
-      trayIcon = new TrayIcon(ImageIO.read(SystemTrayManager.class.getResource("/static/img/octocat.png")));
+      trayIcon = new TrayIcon(
+          ImageIO.read(SystemTrayManager.class.getResource("/static/img/octocat.png")));
       st.add(trayIcon);
 
       popupMenu = new PopupMenu();
@@ -89,6 +93,7 @@ public class SystemTrayManager implements ActionListener {
 
     if (configuration.isPresent() && configuration.get().isValid()) {
       popupMenu.add(repositoryMenuManager.getMenu());
+      popupMenu.add(pullRequestMenuManager.getPullRequestsMenu());
     }
     popupMenu.addSeparator();
     popupMenu.add(exitMenu);

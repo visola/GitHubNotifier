@@ -1,22 +1,20 @@
 package com.github.visola.githubnotifier.ui;
 
+import com.github.visola.githubnotifier.event.PullRequestsEvent;
 import com.github.visola.githubnotifier.model.PullRequest;
 import com.github.visola.githubnotifier.service.PullRequestService;
 import humanize.Humanize;
 import java.awt.Desktop;
+import java.awt.Menu;
 import java.awt.MenuItem;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,54 +22,47 @@ public class PullRequestMenuManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestMenuManager.class);
 
+  private final Menu pullRequestsMenu = new Menu("Pull Requests");
   private final PullRequestService pullRequestService;
-
-  private List<Runnable> pullRequestUpdateListeners = new ArrayList<>();
-  private List<MenuItem> pullRequestMenus = new ArrayList<>();
 
   @Autowired
   public PullRequestMenuManager(PullRequestService pullRequestService) {
     this.pullRequestService = pullRequestService;
   }
 
-  public void addPullRequestUpdateListener(Runnable r) {
-    this.pullRequestUpdateListeners.add(r);
+  public Menu getPullRequestsMenu() {
+    return pullRequestsMenu;
   }
 
-  public List<MenuItem> getPullRequestMenuItems() {
-    return Collections.unmodifiableList(pullRequestMenus);
+  @EventListener
+  public void pullRequestsChanged(PullRequestsEvent event) {
+    updatePullRequests();
   }
 
-  public void updatePullRequests() {
-    pullRequestMenus.forEach(mi -> {
-      if (mi.getParent() != null) {
-        mi.getParent().remove(mi);
+  private MenuItem createPullRequestMenuItem(PullRequest pullRequest) {
+    String text = String.format("%s - %s - %s",
+        pullRequest.getBase().getRepository().getName(),
+        pullRequest.getTitle(),
+        Humanize.naturalTime(new Date(), pullRequest.getUpdatedAt().getTime()));
+    MenuItem pullRequestMenu = new MenuItem(text);
+    pullRequestMenu.addActionListener((e) -> {
+      try {
+        Desktop.getDesktop().browse(new URI(pullRequest.getHtmlUrl()));
+      } catch (IOException | URISyntaxException ex) {
+        LOG.error("Error while navigating to PR URL", ex);
       }
     });
-    pullRequestMenus.clear();
 
-    pullRequestMenus.add(new MenuItem("-"));
+    return pullRequestMenu;
+  }
 
-    for (PullRequest pr : pullRequestService.getOpenPullRequests()) {
-      String text = String.format("%s - %s - %s",
-          pr.getBase().getRepository().getName(),
-          pr.getTitle(),
-          Humanize.naturalTime(new Date(), pr.getUpdatedAt().getTime()));
-      MenuItem prMenu = new MenuItem(text);
-      prMenu.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          try {
-            Desktop.getDesktop().browse(new URI(pr.getHtmlUrl()));
-          } catch (IOException | URISyntaxException ex) {
-            LOG.error("Error while navigating to PR URL", ex);
-          }
-        }
-      });
-      pullRequestMenus.add(prMenu);
-    }
+  private void updatePullRequests() {
+    pullRequestsMenu.removeAll();
+    pullRequestsMenu.add(new MenuItem("-"));
 
-    pullRequestUpdateListeners.forEach(r -> r.run());
+    pullRequestService.getOpenPullRequests().stream()
+        .map(this::createPullRequestMenuItem)
+        .forEach(pullRequestsMenu::add);
   }
 
 }
