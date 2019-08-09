@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,6 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -33,9 +37,9 @@ public class GitHubClient {
 
   private static final Logger LOG = LoggerFactory.getLogger(GitHubClient.class);
 
-  private final RestTemplate restTemplate;
-
   private Optional<Configuration> configuration = Optional.empty();
+  private Map<String, String> eventsETagsByRepositoryName = new HashMap<>();
+  private final RestTemplate restTemplate;
 
   @Autowired
   public GitHubClient(RestTemplate restTemplate) {
@@ -86,12 +90,29 @@ public class GitHubClient {
   public List<Event> getEvents(Set<String> repositoryFullNames) {
     List<Event> result = new ArrayList<>();
     for (String fullName : repositoryFullNames) {
-      List<Event> events = restTemplate.exchange(
+      HttpEntity<Void> entity;
+      if (eventsETagsByRepositoryName.containsKey(fullName)) {
+        entity = createHttpEntity("If-None-Match", eventsETagsByRepositoryName.get(fullName));
+      } else {
+        entity = createHttpEntity();
+      }
+
+      ResponseEntity<List<Event>> response = restTemplate.exchange(
           configuration.get().getApiBase() + "/repos/" + fullName + "/events",
           HttpMethod.GET,
-          createHttpEntity(),
+          entity,
           new ParameterizedTypeReference<List<Event>>() {}
-      ).getBody();
+      );
+
+      if (HttpStatus.NOT_MODIFIED.equals(response.getStatusCode())) {
+        continue;
+      }
+
+      if (response.getHeaders().containsKey("ETag")) {
+        eventsETagsByRepositoryName.put(fullName, response.getHeaders().get("ETag").get(0));
+      }
+
+      List<Event> events = response.getBody();
       if (events == null) {
         throw new RuntimeException("Events body is empty for repo: " + fullName);
       } else {
@@ -119,8 +140,14 @@ public class GitHubClient {
     }
   }
 
-  private HttpEntity<Void> createHttpEntity() {
+  private HttpEntity<Void> createHttpEntity(String... extraHeaders) {
     HttpHeaders headers = new HttpHeaders();
+    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+
+    for (int i = 0; i < extraHeaders.length; i += 2) {
+      headers.add(extraHeaders[i], extraHeaders[i + 1]);
+    }
+
     Configuration config = configuration.get();
     if (config.isToken()) {
       headers.add("Authorization", "Token " + config.getPassword());
@@ -131,7 +158,7 @@ public class GitHubClient {
           "Basic " + Base64.getEncoder().encodeToString(usernamePassword.getBytes())
       );
     }
-    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+
     HttpEntity<Void> entity = new HttpEntity<>(headers);
     return entity;
   }
