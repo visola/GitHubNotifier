@@ -1,10 +1,10 @@
 package com.github.visola.githubnotifier.ui;
 
+import com.github.visola.githubnotifier.model.Configuration;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.Optional;
-
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -12,20 +12,17 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import com.github.visola.githubnotifier.model.Configuration;
-
 public class ConfigurationPanel extends JPanel {
 
+  private static final long serialVersionUID = 1L;
   private static final int COLUMN_COUNT = 50;
 
-  private static final long serialVersionUID = 1L;
-
-  private JTextField githubUrlTextField = new JTextField();
-  private JPasswordField passwordTextField = new JPasswordField();
-  private JTextField usernameTextField = new JTextField();
+  private final JTextField githubUrlTextField = new JTextField();
+  private final JPasswordField passwordTextField = new JPasswordField();
+  private final JTextField usernameTextField = new JTextField();
   private JCheckBox tokenCheckBox = new JCheckBox();
 
-  public ConfigurationPanel(Optional<Configuration> configuration) {
+  public ConfigurationPanel() {
     setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
     setLayout(new GridBagLayout());
@@ -90,22 +87,32 @@ public class ConfigurationPanel extends JPanel {
     gbcTokenTextField.gridx = 1;
     gbcTokenTextField.gridy = 3;
     add(tokenCheckBox, gbcTokenTextField);
-
-    configuration.ifPresent(config -> {
-      githubUrlTextField.setText(config.getGithubUrl());
-      usernameTextField.setText(config.getUsername());
-      passwordTextField.setText(config.getPassword());
-      tokenCheckBox.getModel().setSelected(config.isToken());
-    });
   }
 
   public Configuration getConfiguration() {
+    // TODO Validate configuration here and return emtpy Optional<Configuration> if failed
     Configuration configuration = new Configuration();
     configuration.setGithubUrl(githubUrlTextField.getText());
     configuration.setUsername(usernameTextField.getText());
     configuration.setPassword(new String(passwordTextField.getPassword()));
     configuration.setToken(tokenCheckBox.getModel().isSelected());
     return configuration;
+  }
+
+  public void setConfiguration(Optional<Configuration> configuration) {
+    if (configuration.isPresent()) {
+      Configuration config = configuration.get();
+      githubUrlTextField.setText(config.getGithubUrl());
+      usernameTextField.setText(config.getUsername());
+      passwordTextField.setText(config.getPassword());
+      tokenCheckBox.getModel().setSelected(config.isToken());
+      return;
+    }
+
+    githubUrlTextField.setText("");
+    usernameTextField.setText("");
+    passwordTextField.setText("");
+    tokenCheckBox.getModel().setSelected(false);
   }
 
 }

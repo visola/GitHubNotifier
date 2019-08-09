@@ -2,11 +2,7 @@ package com.github.visola.githubnotifier.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-import org.eclipse.egit.github.core.PullRequestMarker;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,25 +12,21 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-@Table(name="commits")
 public class Commit {
 
   @Id
-  String sha;
-  String ref;
-  String label;
-  @ManyToOne User user;
-  @JoinColumn(name="repo_full_name") @JsonProperty("repo") @ManyToOne Repository repository;
+  private String sha;
+  private String ref;
+  private String label;
+
+  @ManyToOne
+  private User user;
+
+  @JsonProperty("repo")
+  @ManyToOne
+  private Repository repository;
 
   public Commit() {
-  }
-
-  public Commit(PullRequestMarker prMarker) {
-    sha = prMarker.getSha();
-    ref = prMarker.getRef();
-    label = prMarker.getLabel();
-    user = new User(prMarker.getUser());
-    repository = new Repository(prMarker.getRepo());
   }
 
   public String getSha() {

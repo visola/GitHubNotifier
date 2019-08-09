@@ -1,9 +1,8 @@
 package com.github.visola.githubnotifier.model;
 
-import javax.persistence.Column;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -12,22 +11,23 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-@Table(name="users")
 public class User {
 
-  @Id int id;
-  String login;
-  String name;
-  @Column(name="avatar_url") String avatarUrl;
+  @Id 
+  private long id;
+  private String login;
+  private String name;
+  private String avatarUrl;
 
   public User() {
   }
-
-  public User(org.eclipse.egit.github.core.User user) {
-    id = user.getId();
-    login = user.getLogin();
-    name = user.getName();
-    avatarUrl = user.getAvatarUrl();
+  
+  public String getName() {
+    return name;
+  }
+  
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getLogin() {
@@ -38,11 +38,11 @@ public class User {
     this.login = login;
   }
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(long id) {
     this.id = id;
   }
 
@@ -54,4 +54,23 @@ public class User {
     this.avatarUrl = avatarUrl;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    User user = (User) o;
+    return id == user.id &&
+        Objects.equals(login, user.login) &&
+        Objects.equals(name, user.name) &&
+        Objects.equals(avatarUrl, user.avatarUrl);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, login, name, avatarUrl);
+  }
 }

@@ -12,17 +12,16 @@ repositories {
 }
 
 dependencies {
-  compile 'com.fasterxml.jackson.core:jackson-annotations'
-  compile 'com.fasterxml.jackson.core:jackson-databind'
-  compile 'com.github.mfornos:humanize-slim:1.2.2'
-  compile 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
-  compile 'org.springframework.boot:spring-boot-starter-data-jpa'
-  compile 'org.springframework.boot:spring-boot-starter-web'
-
-  runtime 'com.h2database:h2'
-  runtime 'com.zaxxer:HikariCP'
-  runtime 'org.flywaydb:flyway-core'
-  runtime 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
+  implementation 'com.fasterxml.jackson.core:jackson-annotations'
+  implementation 'com.fasterxml.jackson.core:jackson-databind'
+  implementation 'com.github.mfornos:humanize-slim:1.2.2'
+  implementation 'com.google.guava:guava:28.0-jre'
+  implementation 'com.h2database:h2'
+  implementation 'com.zaxxer:HikariCP'
+  implementation 'org.liquibase:liquibase-core'
+  implementation 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  implementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
 tasks.withType(JavaCompile) {

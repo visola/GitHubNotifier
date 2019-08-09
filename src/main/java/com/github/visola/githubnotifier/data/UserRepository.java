@@ -1,9 +1,8 @@
 package com.github.visola.githubnotifier.data;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
-
 import com.github.visola.githubnotifier.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends PagingAndSortingRepository<User, Integer>{
+public interface UserRepository extends JpaRepository<User, Integer> {
 
 }

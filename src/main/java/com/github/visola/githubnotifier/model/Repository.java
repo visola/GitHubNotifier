@@ -1,9 +1,8 @@
 package com.github.visola.githubnotifier.model;
 
-import javax.persistence.Column;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -12,22 +11,23 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-@Table(name="repositories")
 public class Repository {
 
   @Id
-  @Column(name="full_name")
-  String fullName;
-  String name;
-  String htmlUrl;
+  private long id;
+  private String fullName;
+  private String name;
+  private String htmlUrl;
 
   public Repository() {
   }
 
-  public Repository(org.eclipse.egit.github.core.Repository repository) {
-    fullName = repository.getOwner().getName() + "/" + repository.getName();
-    name = repository.getName();
-    htmlUrl = repository.getHtmlUrl();
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
   }
 
   public String getName() {
@@ -54,4 +54,23 @@ public class Repository {
     this.htmlUrl = htmlUrl;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Repository that = (Repository) o;
+    return id == that.id &&
+        Objects.equals(fullName, that.fullName) &&
+        Objects.equals(name, that.name) &&
+        Objects.equals(htmlUrl, that.htmlUrl);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, fullName, name, htmlUrl);
+  }
 }

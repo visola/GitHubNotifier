@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -16,38 +15,26 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-@Table(name="pull_requests")
 public class PullRequest {
 
-  @Id
-  long id;
-  int number;
-  String title;
-  String state;
-  String htmlUrl;
-  Calendar createdAt;
-  Calendar updatedAt;
-  @JoinColumn(name="base_sha") @ManyToOne(cascade=CascadeType.MERGE) Commit base;
-  @JoinColumn(name="head_sha") @ManyToOne(cascade=CascadeType.MERGE) Commit head;
+  @Id 
+  private long id;
+  private int number;
+  private String title;
+  private String state;
+  private String htmlUrl;
+  private Calendar createdAt;
+  private Calendar updatedAt;
+
+  @JoinColumn(name="base_sha")
+  @ManyToOne(cascade=CascadeType.MERGE)
+  private Commit base;
+
+  @JoinColumn(name="head_sha")
+  @ManyToOne(cascade=CascadeType.MERGE)
+  private Commit head;
 
   public PullRequest() {
-  }
-
-  public PullRequest(org.eclipse.egit.github.core.PullRequest pr) {
-    id = pr.getId();
-    number = pr.getNumber();
-    title = pr.getTitle();
-    state = pr.getState();
-    htmlUrl = pr.getHtmlUrl();
-
-    createdAt = Calendar.getInstance();
-    createdAt.setTime(pr.getCreatedAt());
-
-    updatedAt = Calendar.getInstance();
-    updatedAt.setTime(pr.getUpdatedAt());
-
-    base = new Commit(pr.getBase());
-    head = new Commit(pr.getHead());
   }
 
   public Commit getBase() {
