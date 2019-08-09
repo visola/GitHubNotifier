@@ -4,7 +4,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import com.github.visola.githubnotifier.model.Event;
-import com.github.visola.githubnotifier.service.EventsLoadedEvent;
+import com.github.visola.githubnotifier.event.EventsLoadedEvent;
 
 @Component
 public class EventProcessor {

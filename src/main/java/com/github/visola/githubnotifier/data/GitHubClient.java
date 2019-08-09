@@ -26,7 +26,7 @@ import com.github.visola.githubnotifier.model.Configuration;
 import com.github.visola.githubnotifier.model.Event;
 import com.github.visola.githubnotifier.model.PullRequest;
 import com.github.visola.githubnotifier.model.Repository;
-import com.github.visola.githubnotifier.service.ConfigurationEvent;
+import com.github.visola.githubnotifier.event.ConfigurationEvent;
 
 @Service
 public class GitHubClient {

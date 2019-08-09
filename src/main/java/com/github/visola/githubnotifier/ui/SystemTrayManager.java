@@ -1,7 +1,7 @@
 package com.github.visola.githubnotifier.ui;
 
 import com.github.visola.githubnotifier.model.Configuration;
-import com.github.visola.githubnotifier.service.ConfigurationEvent;
+import com.github.visola.githubnotifier.event.ConfigurationEvent;
 import java.awt.AWTException;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;

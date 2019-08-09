@@ -1,5 +1,6 @@
 package com.github.visola.githubnotifier.ui;
 
+import com.github.visola.githubnotifier.event.RepositoryEvent;
 import com.github.visola.githubnotifier.model.Repository;
 import com.github.visola.githubnotifier.service.RepositoryService;
 import java.awt.Desktop;
@@ -13,6 +14,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,6 +38,11 @@ public class RepositoryMenuManager {
     manageMenu.addActionListener((e) -> repositoriesFrame.setVisible(true));
 
     repositoriesMenu.addSeparator();
+    updateRepositoriesMenu();
+  }
+
+  @EventListener
+  public void repositoriesChanged(RepositoryEvent event) {
     updateRepositoriesMenu();
   }
 

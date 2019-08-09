@@ -1,9 +1,8 @@
 package com.github.visola.githubnotifier.data;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
-
 import com.github.visola.githubnotifier.model.Event;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface EventRepository extends PagingAndSortingRepository<Event, Long> {
+public interface EventRepository extends JpaRepository<Event, Long> {
 
 }

@@ -1,4 +1,4 @@
-package com.github.visola.githubnotifier.service;
+package com.github.visola.githubnotifier.event;
 
 import java.util.List;
 

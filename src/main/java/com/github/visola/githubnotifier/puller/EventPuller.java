@@ -2,9 +2,9 @@ package com.github.visola.githubnotifier.puller;
 
 import com.github.visola.githubnotifier.model.Configuration;
 import com.github.visola.githubnotifier.model.Event;
-import com.github.visola.githubnotifier.service.ConfigurationEvent;
+import com.github.visola.githubnotifier.event.ConfigurationEvent;
 import com.github.visola.githubnotifier.service.EventService;
-import com.github.visola.githubnotifier.service.EventsLoadedEvent;
+import com.github.visola.githubnotifier.event.EventsLoadedEvent;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;

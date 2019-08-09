@@ -2,7 +2,7 @@ package com.github.visola.githubnotifier.puller;
 
 import com.github.visola.githubnotifier.model.Configuration;
 import com.github.visola.githubnotifier.model.PullRequest;
-import com.github.visola.githubnotifier.service.ConfigurationEvent;
+import com.github.visola.githubnotifier.event.ConfigurationEvent;
 import com.github.visola.githubnotifier.service.PullRequestService;
 import java.io.IOException;
 import java.util.Optional;

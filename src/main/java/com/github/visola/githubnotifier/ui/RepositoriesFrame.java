@@ -92,7 +92,7 @@ public class RepositoriesFrame extends JFrame implements ActionListener {
         }
 
         for (int index : selectedIndices) {
-          repositoryService.deleteByName(repositoriesModel.getElementAt(index).getName());
+          repositoryService.deleteByName(repositoriesModel.getElementAt(index).getFullName());
         }
         refreshData();
         break;

@@ -1,5 +1,6 @@
 package com.github.visola.githubnotifier.model;
 
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -53,4 +54,23 @@ public class Repository {
     this.htmlUrl = htmlUrl;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Repository that = (Repository) o;
+    return id == that.id &&
+        Objects.equals(fullName, that.fullName) &&
+        Objects.equals(name, that.name) &&
+        Objects.equals(htmlUrl, that.htmlUrl);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, fullName, name, htmlUrl);
+  }
 }

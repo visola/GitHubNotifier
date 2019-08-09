@@ -1,5 +1,6 @@
 package com.github.visola.githubnotifier.service;
 
+import com.github.visola.githubnotifier.event.ConfigurationEvent;
 import java.util.Iterator;
 import java.util.Optional;
 
