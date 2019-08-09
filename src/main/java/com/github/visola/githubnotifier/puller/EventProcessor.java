@@ -1,4 +1,4 @@
-package com.github.visola.githubnotifier.activity;
+package com.github.visola.githubnotifier.puller;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,6 @@ public class EventProcessor {
         case CommitCommentEvent:
         case PullRequestEvent:
         case PullRequestReviewCommentEvent:
-          break;
         default:
           break;
       }
