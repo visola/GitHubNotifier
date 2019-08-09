@@ -1,10 +1,12 @@
 package com.github.visola.githubnotifier.ui;
 
+import com.github.visola.githubnotifier.model.Repository;
+import com.github.visola.githubnotifier.service.RepositoryService;
+import com.google.common.base.Strings;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Optional;
-
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -14,17 +16,10 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.github.visola.githubnotifier.model.Repository;
-import com.github.visola.githubnotifier.service.RepositoryService;
-import com.google.common.base.Strings;
-
 @Component
-@Lazy
 public class RepositoriesFrame extends JFrame implements ActionListener {
 
   private static final long serialVersionUID = 1L;
@@ -80,24 +75,26 @@ public class RepositoriesFrame extends JFrame implements ActionListener {
         String fullName = JOptionPane.showInputDialog(this, "What's the full path for the repo? (e.g.: torvalds/linux)");
         if (!Strings.isNullOrEmpty(fullName)) {
           Optional<Repository> loaded = repositoryService.findByFullName(fullName);
-          if (loaded.isPresent()) {
-            repositoryService.save(loaded.get());
-            refreshData();
-          } else {
+          if (!loaded.isPresent()) {
             JOptionPane.showMessageDialog(this, "Repository '" + fullName + "' wasn't found. Please check for typos.", "Repository Not Found", JOptionPane.ERROR_MESSAGE);
+            break;
           }
+
+          repositoryService.save(loaded.get());
+          refreshData();
         }
         break;
       case ACTION_REMOVE:
         int [] selectedIndices = repositoriesList.getSelectedIndices();
-        if (selectedIndices.length > 0) {
-          for (int index : selectedIndices) {
-            repositoryService.deleteByName(repositoriesModel.getElementAt(index).getName());
-          }
-          refreshData();
-        } else {
+        if (selectedIndices.length == 0) {
           JOptionPane.showMessageDialog(this, "Select a repository to remove from the list.", "Selection Empty", JOptionPane.INFORMATION_MESSAGE);
+          break;
         }
+
+        for (int index : selectedIndices) {
+          repositoryService.deleteByName(repositoriesModel.getElementAt(index).getName());
+        }
+        refreshData();
         break;
     }
   }
