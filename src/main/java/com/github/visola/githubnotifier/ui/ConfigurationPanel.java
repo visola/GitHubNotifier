@@ -1,18 +1,16 @@
 package com.github.visola.githubnotifier.ui;
 
+import com.github.visola.githubnotifier.model.Configuration;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.Optional;
-
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-import com.github.visola.githubnotifier.model.Configuration;
 
 public class ConfigurationPanel extends JPanel {
 
@@ -24,7 +22,7 @@ public class ConfigurationPanel extends JPanel {
   private final JTextField usernameTextField = new JTextField();
   private JCheckBox tokenCheckBox = new JCheckBox();
 
-  public ConfigurationPanel(Optional<Configuration> configuration) {
+  public ConfigurationPanel() {
     setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
     setLayout(new GridBagLayout());
@@ -89,16 +87,10 @@ public class ConfigurationPanel extends JPanel {
     gbcTokenTextField.gridx = 1;
     gbcTokenTextField.gridy = 3;
     add(tokenCheckBox, gbcTokenTextField);
-
-    configuration.ifPresent(config -> {
-      githubUrlTextField.setText(config.getGithubUrl());
-      usernameTextField.setText(config.getUsername());
-      passwordTextField.setText(config.getPassword());
-      tokenCheckBox.getModel().setSelected(config.isToken());
-    });
   }
 
   public Configuration getConfiguration() {
+    // TODO Validate configuration here and return emtpy Optional<Configuration> if failed
     Configuration configuration = new Configuration();
     configuration.setGithubUrl(githubUrlTextField.getText());
     configuration.setUsername(usernameTextField.getText());
@@ -113,11 +105,14 @@ public class ConfigurationPanel extends JPanel {
       githubUrlTextField.setText(config.getGithubUrl());
       usernameTextField.setText(config.getUsername());
       passwordTextField.setText(config.getPassword());
-    } else {
-      githubUrlTextField.setText("");
-      usernameTextField.setText("");
-      passwordTextField.setText("");
+      tokenCheckBox.getModel().setSelected(config.isToken());
+      return;
     }
+
+    githubUrlTextField.setText("");
+    usernameTextField.setText("");
+    passwordTextField.setText("");
+    tokenCheckBox.getModel().setSelected(false);
   }
 
 }

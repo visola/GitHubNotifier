@@ -1,27 +1,19 @@
 package com.github.visola.githubnotifier.ui;
 
+import com.github.visola.githubnotifier.model.Configuration;
+import com.github.visola.githubnotifier.service.ConfigurationService;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.Optional;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.github.visola.githubnotifier.model.Configuration;
-import com.github.visola.githubnotifier.service.ConfigurationService;
-
 @Component
-@Lazy
 public class ConfigurationFrame extends JFrame implements ActionListener {
 
   private static final long serialVersionUID = 1L;
@@ -40,12 +32,12 @@ public class ConfigurationFrame extends JFrame implements ActionListener {
     setLocationRelativeTo(null);
 
     this.configurationService = configurationService;
-    this.addWindowListener(new ConfigurationLoader());
 
     JComponent container = (JComponent) getContentPane();
-    container.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    container.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
-    configurationPanel = new ConfigurationPanel(configurationService.load());
+    configurationPanel = new ConfigurationPanel();
+    configurationPanel.setConfiguration(configurationService.load());
     add(configurationPanel, BorderLayout.CENTER);
 
     JPanel buttonsPane = new JPanel();
@@ -71,16 +63,6 @@ public class ConfigurationFrame extends JFrame implements ActionListener {
     }
 
     setVisible(false);
-  }
-
-  private class ConfigurationLoader extends WindowAdapter {
-
-    @Override
-    public void windowOpened(WindowEvent e) {
-      Optional<Configuration> configuration = ConfigurationFrame.this.configurationService.load();
-      ConfigurationFrame.this.configurationPanel.setConfiguration(configuration);
-    }
-
   }
 
 }

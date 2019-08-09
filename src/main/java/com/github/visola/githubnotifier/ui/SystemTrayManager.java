@@ -83,8 +83,10 @@ public class SystemTrayManager implements ActionListener {
   private void configureMenuItems() {
     configureMenu.setActionCommand(ACTION_CONFIGURE);
     configureMenu.addActionListener(this);
+
     repositoriesMenu.setActionCommand(ACTION_REPOSITORIES);
     repositoriesMenu.addActionListener(this);
+
     exitMenu.setActionCommand(ACTION_EXIT);
     exitMenu.addActionListener(this);
   }
