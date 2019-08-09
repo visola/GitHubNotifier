@@ -1,5 +1,7 @@
 package com.github.visola.githubnotifier.ui;
 
+import com.github.visola.githubnotifier.model.Configuration;
+import com.github.visola.githubnotifier.service.ConfigurationEvent;
 import java.awt.AWTException;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -9,43 +11,38 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Optional;
-
 import javax.imageio.ImageIO;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-
-import com.github.visola.githubnotifier.model.Configuration;
-import com.github.visola.githubnotifier.service.ConfigurationEvent;
 
 @Component
 public class SystemTrayManager implements ActionListener {
 
   private static final String ACTION_CONFIGURE = "configure";
-  private static final String ACTION_REPOSITORIES = "repositories";
   private static final String ACTION_EXIT = "exit";
 
   private final ConfigurationFrame configurationFrame;
-  private final RepositoriesFrame repositoriesFrame;
+  private final RepositoryMenuManager repositoryMenuManager;
 
   private final PopupMenu popupMenu;
   private final TrayIcon trayIcon;
 
   private final MenuItem configureMenu = new MenuItem("Settings");
-  private final MenuItem repositoriesMenu = new MenuItem("Repositories");
   private final MenuItem exitMenu = new MenuItem("Exit");
 
   private Optional<Configuration> configuration = Optional.empty();
 
   @Autowired
-  public SystemTrayManager(ConfigurationFrame configurationFrame, RepositoriesFrame repositoriesFrame) {
-    try {
+  public SystemTrayManager(ConfigurationFrame configurationFrame,
+      RepositoryMenuManager repositoryMenuManager) {
+
       this.configurationFrame = configurationFrame;
-      this.repositoriesFrame = repositoriesFrame;
+      this.repositoryMenuManager = repositoryMenuManager;
 
       SystemTray st = SystemTray.getSystemTray();
 
+    try {
       trayIcon = new TrayIcon(ImageIO.read(SystemTrayManager.class.getResource("/static/img/octocat.png")));
       st.add(trayIcon);
 
@@ -65,9 +62,6 @@ public class SystemTrayManager implements ActionListener {
       case ACTION_CONFIGURE:
         configurationFrame.setVisible(true);
         break;
-      case ACTION_REPOSITORIES:
-        repositoriesFrame.setVisible(true);
-        break;
       case ACTION_EXIT:
         System.exit(0);
         break;
@@ -84,9 +78,6 @@ public class SystemTrayManager implements ActionListener {
     configureMenu.setActionCommand(ACTION_CONFIGURE);
     configureMenu.addActionListener(this);
 
-    repositoriesMenu.setActionCommand(ACTION_REPOSITORIES);
-    repositoriesMenu.addActionListener(this);
-
     exitMenu.setActionCommand(ACTION_EXIT);
     exitMenu.addActionListener(this);
   }
@@ -97,7 +88,7 @@ public class SystemTrayManager implements ActionListener {
     popupMenu.add(configureMenu);
 
     if (configuration.isPresent() && configuration.get().isValid()) {
-      popupMenu.add(repositoriesMenu);
+      popupMenu.add(repositoryMenuManager.getMenu());
     }
     popupMenu.addSeparator();
     popupMenu.add(exitMenu);

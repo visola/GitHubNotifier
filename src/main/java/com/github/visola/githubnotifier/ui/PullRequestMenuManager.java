@@ -1,5 +1,8 @@
 package com.github.visola.githubnotifier.ui;
 
+import com.github.visola.githubnotifier.model.PullRequest;
+import com.github.visola.githubnotifier.service.PullRequestService;
+import humanize.Humanize;
 import java.awt.Desktop;
 import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
@@ -11,20 +14,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.github.visola.githubnotifier.model.PullRequest;
-import com.github.visola.githubnotifier.service.PullRequestService;
-
-import humanize.Humanize;
-
 @Component
-@Lazy
 public class PullRequestMenuManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestMenuManager.class);

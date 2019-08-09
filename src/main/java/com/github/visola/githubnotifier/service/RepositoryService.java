@@ -1,17 +1,15 @@
 package com.github.visola.githubnotifier.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.github.visola.githubnotifier.data.GitHubClient;
 import com.github.visola.githubnotifier.data.PullRequestRepository;
 import com.github.visola.githubnotifier.data.RepositoryRepository;
 import com.github.visola.githubnotifier.model.Repository;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Lazy
 @Service
