@@ -6,6 +6,7 @@ import com.github.visola.githubnotifier.service.RepositoryService;
 import java.awt.Desktop;
 import java.awt.Menu;
 import java.awt.MenuItem;
+import java.awt.PopupMenu;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -63,6 +64,7 @@ public class RepositoryMenuManager {
   private void updateRepositoriesMenu() {
     repositoriesMenu.removeAll();
     repositoriesMenu.add(manageMenu);
+    repositoriesMenu.addSeparator();
 
     repositoryService.findAllOrderByFullName().stream()
         .map(this::createRepositoryMenuItem)

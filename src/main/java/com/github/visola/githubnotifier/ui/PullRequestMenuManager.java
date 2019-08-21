@@ -1,19 +1,19 @@
 package com.github.visola.githubnotifier.ui;
 
 import com.github.visola.githubnotifier.event.PullRequestsEvent;
+import com.github.visola.githubnotifier.event.PullRequestsSaved;
 import com.github.visola.githubnotifier.model.PullRequest;
 import com.github.visola.githubnotifier.service.PullRequestService;
 import humanize.Humanize;
-import java.awt.Desktop;
 import java.awt.Menu;
 import java.awt.MenuItem;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -23,10 +23,14 @@ public class PullRequestMenuManager {
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestMenuManager.class);
 
   private final Menu pullRequestsMenu = new Menu("Pull Requests");
+  private final ApplicationEventPublisher eventPublisher;
   private final PullRequestService pullRequestService;
 
   @Autowired
-  public PullRequestMenuManager(PullRequestService pullRequestService) {
+  public PullRequestMenuManager(
+      ApplicationEventPublisher eventPublisher,
+      PullRequestService pullRequestService) {
+    this.eventPublisher = eventPublisher;
     this.pullRequestService = pullRequestService;
   }
 
@@ -46,11 +50,12 @@ public class PullRequestMenuManager {
         Humanize.naturalTime(new Date(), pullRequest.getUpdatedAt().getTime()));
     MenuItem pullRequestMenu = new MenuItem(text);
     pullRequestMenu.addActionListener((e) -> {
-      try {
-        Desktop.getDesktop().browse(new URI(pullRequest.getHtmlUrl()));
-      } catch (IOException | URISyntaxException ex) {
-        LOG.error("Error while navigating to PR URL", ex);
-      }
+      eventPublisher.publishEvent(new PullRequestsSaved(Arrays.asList(pullRequest)));
+//      try {
+//        Desktop.getDesktop().browse(new URI(pullRequest.getHtmlUrl()));
+//      } catch (IOException | URISyntaxException ex) {
+//        LOG.error("Error while navigating to PR URL", ex);
+//      }
     });
 
     return pullRequestMenu;
@@ -58,11 +63,15 @@ public class PullRequestMenuManager {
 
   private void updatePullRequests() {
     pullRequestsMenu.removeAll();
-    pullRequestsMenu.add(new MenuItem("-"));
 
-    pullRequestService.getOpenPullRequests().stream()
-        .map(this::createPullRequestMenuItem)
-        .forEach(pullRequestsMenu::add);
+    List<PullRequest> openPullRequests = pullRequestService.getOpenPullRequests();
+    if (openPullRequests.isEmpty()) {
+      pullRequestsMenu.add(new MenuItem("No Open Pull Requests"));
+    } else {
+      openPullRequests.stream()
+          .map(this::createPullRequestMenuItem)
+          .forEach(pullRequestsMenu::add);
+    }
   }
 
 }

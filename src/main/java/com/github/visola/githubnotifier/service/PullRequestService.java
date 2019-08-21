@@ -43,6 +43,7 @@ public class PullRequestService {
     this.userRepository = userRepository;
   }
 
+  @Transactional
   public List<PullRequest> getPullRequests() throws IOException {
     Set<String> repoFullNames = StreamSupport
         .stream(repositoryRepository.findAll().spliterator(), false)
@@ -50,6 +51,10 @@ public class PullRequestService {
         .collect(Collectors.toSet());
 
     List<PullRequest> pullRequests = gitClient.getPullRequests(repoFullNames);
+    // API will only return the open PRs, so we mark all existing as closed and then
+    // save the ones that came from the API. This will re-open the closed ones.
+    // TODO - Find PRs that didn't come back and update them separated
+    repositoryRepository.markAllAsClosed();
     save(pullRequests);
     return pullRequests;
   }

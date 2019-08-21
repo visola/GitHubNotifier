@@ -34,14 +34,17 @@ public class NotificationFrame extends JFrame {
 
   private JLabel icon;
   private JLabel message;
+  private final long createdAt;
 
   public NotificationFrame(String messageText, String link) {
     super("Git Notifier Notification");
+    createdAt = System.currentTimeMillis();
 
-    addMouseListener(new OpenLinkMouseListener(link));
+    setLayout(new BorderLayout());
     getContentPane().setBackground(Color.WHITE);
     setAlwaysOnTop(true);
     setUndecorated(true);
+    setPreferredSize(new Dimension(400, 100));
 
     setLayout(new BorderLayout());
 
@@ -49,16 +52,27 @@ public class NotificationFrame extends JFrame {
       icon = new JLabel(new ImageIcon(getScaledImage()));
       icon.setPreferredSize(new Dimension(HEIGHT, HEIGHT));
       icon.setBorder(BORDER);
+      icon.addMouseListener(new CloseFrameListener());
+      // TODO - Make this an actual close button
       add(icon, BorderLayout.LINE_START);
     } catch (IOException e) {
       LOG.error("Error while loading image.", e);
     }
 
-    message = new JLabel(messageText);
+    String wrappedMessage = "<html><p style=\"width: 200px\">";
+    wrappedMessage += messageText;
+    wrappedMessage += "</p></html>";
+
+    message = new JLabel(wrappedMessage);
     message.setBorder(BORDER);
+    message.addMouseListener(new OpenLinkMouseListener(link));
     add(message, BorderLayout.CENTER);
 
     pack();
+  }
+
+  public long getCreatedAt() {
+    return createdAt;
   }
 
   private Image getScaledImage() throws IOException {
@@ -76,7 +90,14 @@ public class NotificationFrame extends JFrame {
     return resizedImage;
   }
 
-  private static class OpenLinkMouseListener extends MouseAdapter {
+  private class CloseFrameListener extends MouseAdapter {
+    @Override
+    public void mouseClicked(MouseEvent e) {
+      NotificationFrame.this.dispose();
+    }
+  }
+
+  private class OpenLinkMouseListener extends MouseAdapter {
     private final String link;
     public OpenLinkMouseListener(String link) {
       this.link = link;
@@ -84,6 +105,7 @@ public class NotificationFrame extends JFrame {
     @Override
     public void mouseClicked(MouseEvent e) {
       try {
+        NotificationFrame.this.dispose();
         Desktop.getDesktop().browse(new URI(link));
       } catch (Exception ex) {
         LOG.error("Error while opening link: {}", link, ex);
