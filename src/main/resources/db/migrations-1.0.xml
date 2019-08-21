@@ -96,12 +96,8 @@
       <column name="updated_at" type="TIMESTAMP">
         <constraints nullable="false" />
       </column>
-      <column name="base_sha" type="VARCHAR(1024)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="head_sha" type="VARCHAR(1024)">
-        <constraints nullable="false"/>
-      </column>
+      <column name="base_sha" type="VARCHAR(1024)" />
+      <column name="head_sha" type="VARCHAR(1024)" />
     </createTable>
   </changeSet>
 

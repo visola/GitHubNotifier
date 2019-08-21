@@ -27,11 +27,11 @@ public class PullRequest {
   private Calendar updatedAt;
 
   @JoinColumn(name="base_sha")
-  @ManyToOne(cascade=CascadeType.MERGE)
+  @ManyToOne(cascade=CascadeType.ALL)
   private Commit base;
 
   @JoinColumn(name="head_sha")
-  @ManyToOne(cascade=CascadeType.MERGE)
+  @ManyToOne(cascade=CascadeType.ALL)
   private Commit head;
 
   public PullRequest() {
