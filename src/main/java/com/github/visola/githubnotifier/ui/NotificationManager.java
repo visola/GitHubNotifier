@@ -28,7 +28,12 @@ public class NotificationManager {
     }
 
     for (PullRequest pullRequest : event.getPullRequests()) {
-      String message = "Pull request changed: " + pullRequest.getTitle();
+      String message = String.format(
+          "%s: %s",
+          pullRequest.getBase().getRepository().getFullName(),
+          pullRequest.getTitle()
+      );
+
       NotificationFrame frame = new NotificationFrame(message, pullRequest.getHtmlUrl());
       frame.setVisible(true);
       frame.addWindowListener(new CloseNotificationHandler());
