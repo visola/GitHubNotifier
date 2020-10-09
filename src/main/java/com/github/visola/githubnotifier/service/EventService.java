@@ -5,7 +5,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import com.github.visola.githubnotifier.data.EventRepository;
@@ -13,6 +16,7 @@ import com.github.visola.githubnotifier.data.GitHubClient;
 import com.github.visola.githubnotifier.data.RepositoryRepository;
 import com.github.visola.githubnotifier.model.Event;
 import com.github.visola.githubnotifier.model.Repository;
+import com.google.common.base.Throwables;
 
 @Service
 public class EventService {
@@ -35,8 +39,14 @@ public class EventService {
 
     List<Event> allEvents = gitHubClient.getEvents(repositoryFullNames);
     for (Event e : allEvents) {
-      System.out.printf("Event ID: %d, Payload ID: %d%n", e.getId(), e.getPayload().getEvent().getId());
-      eventRepository.save(e);
+      try {
+        eventRepository.save(e);
+      } catch (JpaObjectRetrievalFailureException exception) {
+        if (Throwables.getRootCause(exception) instanceof EntityNotFoundException) {
+          // Event has some relationship with objects we don't care about
+          continue;
+        }
+      }
     }
     return allEvents;
   }
